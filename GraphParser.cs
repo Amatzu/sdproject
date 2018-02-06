@@ -14,8 +14,9 @@ namespace sdproject
 
 		private XDocument xml;
 
-		public GraphParser(FileInfo file)
+		public GraphParser(string filepath)
 		{
+			var file = new FileInfo(filepath);
 			if (!file.Exists) throw new FileNotFoundException("File not found");
 			if (file.Extension != ".xmile") throw new FileFormatException("Input must be an xmile file");
 
@@ -30,12 +31,15 @@ namespace sdproject
 
 		public Graph CreateGraph()
 		{
-			XElement root = xml.Element("xmile").Element("model");
-			var stocks = from stock in root.Elements("stock")
-						 select stock.Attribute("name").ToString();
-			var flows = from flow in root.Elements("flow")
-						let inflow = flow.Attribute("inflow")?.ToString()
-						let outflow = flow.Attribute("outflow").ToString()
+			string prefix = "{" + NAMESPACE + "}";
+
+			XElement root = xml.Root.Element(prefix + "model").Element(prefix + "variables");
+			var stocks = from stock in root.Elements(prefix + "stock")
+						 select stock.Attribute("name").Value;
+			// TODO: fix flow query
+			var flows = from flow in root.Elements(prefix + "flow")
+						let inflow = flow.Attribute("inflow")?.Value
+						let outflow = flow.Attribute("outflow").Value
 						select new Edge<string>(outflow, inflow ?? outflow);
 
 			var graph = new Graph(true);
