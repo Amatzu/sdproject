@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace sdproject
 	{
 		public MainWindow()
 		{
+			var gp = new GraphParser(new FileInfo(@"C:\Users\Dmitry\Desktop\sdproject\sdproject\Templates\teacup.xmile"));
 			InitializeComponent();
 		}
 	}
