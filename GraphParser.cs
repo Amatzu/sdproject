@@ -4,6 +4,7 @@ using QuickGraph;
 using System.Xml.Schema;
 using System.Xml.Linq;
 using Graph = QuickGraph.UndirectedGraph<string, QuickGraph.IEdge<string>>;
+using System.Collections.Generic;
 
 namespace sdproject
 {
@@ -20,7 +21,7 @@ namespace sdproject
 			if (!file.Exists) throw new FileNotFoundException("File not found");
 			if (file.Extension != ".xmile") throw new FileFormatException("Input must be an xmile file");
 
-			xml = XDocument.Load(file.FullName);
+			xml = XDocument.Load(filepath);
 
 			var schemas = new XmlSchemaSet();
 			schemas.Add(NAMESPACE, SCHEMA_URI);
@@ -34,18 +35,37 @@ namespace sdproject
 			string prefix = "{" + NAMESPACE + "}";
 
 			XElement root = xml.Root.Element(prefix + "model").Element(prefix + "variables");
-			var stocks = from stock in root.Elements(prefix + "stock")
-						 select stock.Attribute("name").Value;
-			// TODO: fix flow query
-			var flows = from flow in root.Elements(prefix + "flow")
-						let inflow = flow.Attribute("inflow")?.Value
-						let outflow = flow.Attribute("outflow").Value
-						select new Edge<string>(outflow, inflow ?? outflow);
+			var xmlStocks = root.Elements(prefix + "stock");
 
-			var graph = new Graph(true);
+			//Выборка названий стоков
+			var stocks = xmlStocks.Select(stock => stock.Attribute("name").Value);
+			
+			/*
+			 * Для выборки потоков (т.е. рёбер графа) используем реляционную модель данных.
+			 * Возьмём таблицы INFLOWS и OUTFLOWS с колонками STOCK_ID, FLOW_ID и соединим их по FLOW_ID.
+			 */
+			var inflows = xmlStocks.SelectMany(stock =>
+				from e in stock.Elements(prefix + "inflow")
+				select new {
+					StockID = stock.Attribute("name").Value,
+					FlowID = e.Value
+				});
+
+			var outflows = xmlStocks.SelectMany(stock =>
+				from e in stock.Elements(prefix + "outflow")
+				select new {
+					StockID = stock.Attribute("name").Value,
+					FlowID = e.Value
+				});
+
+			//JOIN таблиц INFLOWS и OUTFLOWS по STOCK_ID
+			var flows = from inflow in inflows
+						join outflow in outflows on inflow.FlowID equals outflow.FlowID
+						select new Edge<string>(source: outflow.StockID, target: inflow.StockID);
+
+			var graph = new Graph(allowParallelEdges: true);
 			graph.AddVertexRange(stocks);
 			graph.AddEdgeRange(flows);
-
 			return graph;
 		}
 	}
