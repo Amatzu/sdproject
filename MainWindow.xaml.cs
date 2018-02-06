@@ -23,9 +23,6 @@ namespace sdproject
 	{
 		public MainWindow()
 		{
-			var gp = new GraphParser(@"C:\Users\Dmitry\Desktop\sdproject\sdproject\Templates\teacup.xmile");
-			var graph = gp.CreateGraph();
-
 			InitializeComponent();
 		}
 	}

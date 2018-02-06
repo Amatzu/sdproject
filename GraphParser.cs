@@ -3,8 +3,7 @@ using System.Linq;
 using QuickGraph;
 using System.Xml.Schema;
 using System.Xml.Linq;
-using Graph = QuickGraph.UndirectedGraph<string, QuickGraph.IEdge<string>>;
-using System.Collections.Generic;
+using Graph = QuickGraph.BidirectionalGraph<string, QuickGraph.IEdge<string>>;
 
 namespace sdproject
 {
