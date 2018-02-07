@@ -4,13 +4,15 @@ using QuickGraph;
 using System.Xml.Schema;
 using System.Xml.Linq;
 using Graph = QuickGraph.BidirectionalGraph<string, QuickGraph.IEdge<string>>;
+using System.Collections.Generic;
 
 namespace sdproject
 {
 	class GraphParser
 	{
 		const string NAMESPACE = @"http://docs.oasis-open.org/xmile/ns/XMILE/v1.0",
-					 SCHEMA_URI = @"http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/xmile.xsd";
+		SCHEMA_URI = @"http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/xmile.xsd",
+		DEFAULT_STOCK = "[outside]";
 
 		private XDocument xml;
 
@@ -37,8 +39,9 @@ namespace sdproject
 			var xmlStocks = root.Elements(prefix + "stock");
 
 			//Выборка названий стоков
-			var stocks = xmlStocks.Select(stock => stock.Attribute("name").Value);
-			
+			var stocks = xmlStocks.Select(stock => stock.Attribute("name").Value).ToList();
+			stocks.Add(DEFAULT_STOCK);
+
 			/*
 			 * Для выборки потоков (т.е. рёбер графа) используем реляционную модель данных.
 			 * Возьмём таблицы INFLOWS и OUTFLOWS с колонками STOCK_ID, FLOW_ID и соединим их по FLOW_ID.
@@ -57,10 +60,18 @@ namespace sdproject
 					FlowID = e.Value
 				});
 
-			//JOIN таблиц INFLOWS и OUTFLOWS по STOCK_ID
-			var flows = from inflow in inflows
-						join outflow in outflows on inflow.FlowID equals outflow.FlowID
-						select new Edge<string>(source: outflow.StockID, target: inflow.StockID);
+			//FULL OUTER JOIN таблиц INFLOWS и OUTFLOWS по STOCK_ID
+			var leftOuter = from outflow in outflows
+							join inflow in inflows on outflow.FlowID equals inflow.FlowID into subflows
+							from subflow in subflows.DefaultIfEmpty()
+							select new Edge<string>(outflow.StockID, subflow?.StockID ?? DEFAULT_STOCK);
+
+			var rightOuter = from inflow in inflows
+							 join outflow in outflows on inflow.FlowID equals outflow.FlowID into subflows
+							 from subflow in subflows.DefaultIfEmpty()
+							 select new Edge<string>(subflow?.StockID ?? DEFAULT_STOCK, inflow.StockID);
+
+			var flows = leftOuter.Union(rightOuter);
 
 			var graph = new Graph(allowParallelEdges: true);
 			graph.AddVertexRange(stocks);
