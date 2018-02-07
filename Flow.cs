@@ -19,5 +19,13 @@ namespace sdproject
 		}
 
 		public override string ToString() => string.Concat(name, ": ", source, " -> ", target);
+
+		public override int GetHashCode() => name[0] + name.Length;
+
+		public override bool Equals(object obj)
+		{
+			var flow = obj as Flow;
+			return name == flow.name && source == flow.source && target == flow.target;
+		}
 	}
 }

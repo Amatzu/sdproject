@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using QuickGraph;
 using System.Xml.Schema;
 using System.Xml.Linq;
 using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
@@ -70,7 +69,7 @@ namespace sdproject
 							 from subflow in subflows.DefaultIfEmpty()
 							 select new Flow(inflow.FlowID, subflow?.StockID ?? DEFAULT_STOCK, inflow.StockID);
 
-			var flows = Enumerable.Union(leftOuter, rightOuter).Distinct();
+			var flows = Enumerable.Union(leftOuter, rightOuter);
 
 			var graph = new Graph(allowParallelEdges: true);
 			graph.AddVertexRange(stocks);

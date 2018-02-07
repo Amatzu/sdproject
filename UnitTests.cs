@@ -8,7 +8,7 @@ namespace sdproject
 	{
 		[Test]
 		[TestCase("teacup", 2, 1)]
-		[TestCase("Borneo", 19)]
+		[TestCase("Borneo", 19, 23)]
 		public void GraphParsingTest(string filename, int expectedVertices, int expectedEdges)
 		{
 			var parser = new GraphParser(AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\" + filename + ".xmile");

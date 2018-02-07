@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
 namespace sdproject
 {
@@ -10,8 +9,6 @@ namespace sdproject
 	{
 		public MainWindow()
 		{
-			var parser = new GraphParser(AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\borneo.xmile");
-			var graph = parser.CreateGraph();
 			InitializeComponent();
 		}
 	}
