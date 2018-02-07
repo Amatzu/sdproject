@@ -3,8 +3,7 @@ using System.Linq;
 using QuickGraph;
 using System.Xml.Schema;
 using System.Xml.Linq;
-using Graph = QuickGraph.BidirectionalGraph<string, QuickGraph.IEdge<string>>;
-using System.Collections.Generic;
+using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
 
 namespace sdproject
 {
@@ -64,18 +63,18 @@ namespace sdproject
 			var leftOuter = from outflow in outflows
 							join inflow in inflows on outflow.FlowID equals inflow.FlowID into subflows
 							from subflow in subflows.DefaultIfEmpty()
-							select new Edge<string>(outflow.StockID, subflow?.StockID ?? DEFAULT_STOCK);
+							select new Flow(outflow.FlowID, outflow.StockID, subflow?.StockID ?? DEFAULT_STOCK);
 
 			var rightOuter = from inflow in inflows
 							 join outflow in outflows on inflow.FlowID equals outflow.FlowID into subflows
 							 from subflow in subflows.DefaultIfEmpty()
-							 select new Edge<string>(subflow?.StockID ?? DEFAULT_STOCK, inflow.StockID);
+							 select new Flow(inflow.FlowID, subflow?.StockID ?? DEFAULT_STOCK, inflow.StockID);
 
-			var flows = leftOuter.Union(rightOuter);
+			var flows = Enumerable.Union(leftOuter, rightOuter).Distinct();
 
 			var graph = new Graph(allowParallelEdges: true);
 			graph.AddVertexRange(stocks);
-			graph.AddEdgeRange(flows);
+			graph.AddEdgeRange(Enumerable.Distinct(flows));
 			return graph;
 		}
 	}
