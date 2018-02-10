@@ -3,6 +3,7 @@ using System.Linq;
 using System.Xml.Schema;
 using System.Xml.Linq;
 using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
+using System;
 
 //TODO: optimization (???)
 
@@ -19,7 +20,7 @@ namespace sdproject
 		{
 			var file = new FileInfo(filepath);
 			if (!file.Exists) throw new FileNotFoundException("File not found");
-			if (file.Extension != ".xmile") throw new FileFormatException("Input must be an xmile file");
+			if (file.Extension != ".xmile") throw new ArgumentException("Input must be an xmile file");
 
 			xml = XDocument.Load(filepath);
 

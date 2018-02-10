@@ -25,7 +25,7 @@ namespace sdproject
 
 			Assert.Throws<FileNotFoundException>(() => new GraphParser(@"Non-existant file!"));
 
-			Assert.Throws<FileFormatException>(() => new GraphParser(AppDomain.CurrentDomain.BaseDirectory + @"..\..\UnitTests.cs"));
+			Assert.Throws<ArgumentException>(() => new GraphParser(AppDomain.CurrentDomain.BaseDirectory + @"..\..\UnitTests.cs"));
 		}
 	}
 }
