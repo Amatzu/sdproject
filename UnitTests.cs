@@ -12,7 +12,7 @@ namespace sdproject
 		public void GraphParsingTest(string filename, int expectedVertices, int expectedEdges)
 		{
 			var parser = new GraphParser(AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\" + filename + ".xmile");
-			var graph = parser.CreateGraph();
+			var graph = parser.CreateGraph("DEFAULT");
 
 			Assert.AreEqual(graph.VertexCount, expectedVertices);
 			Assert.AreEqual(graph.EdgeCount, expectedEdges);

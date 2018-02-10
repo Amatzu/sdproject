@@ -4,13 +4,14 @@ using System.Xml.Schema;
 using System.Xml.Linq;
 using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
 
+//TODO: optimization (???)
+
 namespace sdproject
 {
 	class GraphParser
 	{
 		const string NAMESPACE = @"http://docs.oasis-open.org/xmile/ns/XMILE/v1.0",
-		SCHEMA_URI = @"http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/xmile.xsd",
-		DEFAULT_STOCK = "[outside]";
+		SCHEMA_URI = @"http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/xmile.xsd";
 
 		private XDocument xml;
 
@@ -29,7 +30,7 @@ namespace sdproject
 			});
 		}
 
-		public Graph CreateGraph()
+		public Graph CreateGraph(string defaultStock)
 		{
 			string prefix = "{" + NAMESPACE + "}";
 
@@ -38,7 +39,7 @@ namespace sdproject
 
 			//Выборка названий стоков
 			var stocks = xmlStocks.Select(stock => stock.Attribute("name").Value).ToList();
-			stocks.Add(DEFAULT_STOCK);
+			stocks.Add(defaultStock);
 
 			/*
 			 * Для выборки потоков (т.е. рёбер графа) используем реляционную модель данных.
@@ -62,18 +63,18 @@ namespace sdproject
 			var leftOuter = from outflow in outflows
 							join inflow in inflows on outflow.FlowID equals inflow.FlowID into subflows
 							from subflow in subflows.DefaultIfEmpty()
-							select new Flow(outflow.FlowID, outflow.StockID, subflow?.StockID ?? DEFAULT_STOCK);
+							select new Flow(outflow.FlowID, outflow.StockID, subflow?.StockID ?? defaultStock);
 
 			var rightOuter = from inflow in inflows
 							 join outflow in outflows on inflow.FlowID equals outflow.FlowID into subflows
 							 from subflow in subflows.DefaultIfEmpty()
-							 select new Flow(inflow.FlowID, subflow?.StockID ?? DEFAULT_STOCK, inflow.StockID);
+							 select new Flow(inflow.FlowID, subflow?.StockID ?? defaultStock, inflow.StockID);
 
 			var flows = Enumerable.Union(leftOuter, rightOuter);
 
 			var graph = new Graph(allowParallelEdges: true);
 			graph.AddVertexRange(stocks);
-			graph.AddEdgeRange(Enumerable.Distinct(flows));
+			graph.AddEdgeRange(flows);
 			return graph;
 		}
 	}
