@@ -7,11 +7,12 @@ namespace sdproject
 	class UnitTests
 	{
 		[Test]
-		[TestCase("teacup", 2, 1)]
-		[TestCase("Borneo", 19, 23)]
+		[TestCase("teacup", 2, 1), TestCase("Borneo", 19, 23)]
 		public void GraphParsingTest(string filename, int expectedVertices, int expectedEdges)
 		{
-			var parser = new GraphParser(AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\" + filename + ".xmile");
+			string filepath = AppDomain.CurrentDomain.BaseDirectory + 
+			                  @"..\..\Templates\" + filename + ".xmile";
+			var parser = new GraphParser(filepath, false);
 			var graph = parser.CreateGraph("DEFAULT");
 
 			Assert.AreEqual(graph.VertexCount, expectedVertices);
@@ -25,7 +26,8 @@ namespace sdproject
 
 			Assert.Throws<FileNotFoundException>(() => new GraphParser(@"Non-existant file!"));
 
-			Assert.Throws<ArgumentException>(() => new GraphParser(AppDomain.CurrentDomain.BaseDirectory + @"..\..\UnitTests.cs"));
+			string filepath = AppDomain.CurrentDomain.BaseDirectory + @"..\..\UnitTests.cs";
+			Assert.Throws<ArgumentException>(() => new GraphParser(filepath));
 		}
 	}
 }

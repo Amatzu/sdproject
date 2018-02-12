@@ -16,8 +16,8 @@ namespace sdproject
 
 		public void FindPatterns()
 		{
-			int maxPatternSize = graph.VertexCount / 2;
-
+			int patternSize = graph.VertexCount / 2;
+			
 			//todo: incindency matrix
 		}
 	}

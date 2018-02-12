@@ -1,27 +1,27 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
-using System.Xml.Schema;
-using System.Xml.Linq;
-using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
-using System;
 using System.Xml;
-
-//TODO: optimization (???)
+using System.Xml.Linq;
+using System.Xml.Schema;
+using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
 
 namespace sdproject
 {
 	class GraphParser
 	{
 		private const string NAMESPACE = @"http://docs.oasis-open.org/xmile/ns/XMILE/v1.0";
-		private static readonly	string SCHEMA_LOCATION = 
-			AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\schema.xsd";
+		private static readonly	string SCHEMA_LOCATION = AppDomain.CurrentDomain.BaseDirectory + 
+		                       	                         @"..\..\Templates\schema.xsd";
 		private XDocument xml;
 
 		public GraphParser(string filepath, bool validate = true)
 		{
 			var file = new FileInfo(filepath);
-			if (!file.Exists) throw new FileNotFoundException("Файл не найден");
-			if (file.Extension != ".xmile") throw new ArgumentException("Файл должен иметь расширение .xmile");
+			if (!file.Exists)
+				throw new FileNotFoundException("Файл не найден");
+			if (file.Extension != ".xmile")
+				throw new ArgumentException("Файл должен иметь расширение .xmile");
 
 			xml = XDocument.Load(filepath);
 
