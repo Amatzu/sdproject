@@ -4,6 +4,7 @@ using System.Xml.Schema;
 using System.Xml.Linq;
 using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
 using System;
+using System.Xml;
 
 //TODO: optimization (???)
 
@@ -11,24 +12,36 @@ namespace sdproject
 {
 	class GraphParser
 	{
-		const string NAMESPACE = @"http://docs.oasis-open.org/xmile/ns/XMILE/v1.0",
-		SCHEMA_URI = @"http://docs.oasis-open.org/xmile/xmile/v1.0/cos01/schemas/xmile.xsd";
-
+		private const string NAMESPACE = @"http://docs.oasis-open.org/xmile/ns/XMILE/v1.0";
+		private static readonly	string SCHEMA_LOCATION = 
+			AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\schema.xsd";
 		private XDocument xml;
 
-		public GraphParser(string filepath)
+		public GraphParser(string filepath, bool validate = true)
 		{
 			var file = new FileInfo(filepath);
-			if (!file.Exists) throw new FileNotFoundException("File not found");
-			if (file.Extension != ".xmile") throw new ArgumentException("Input must be an xmile file");
+			if (!file.Exists) throw new FileNotFoundException("Файл не найден");
+			if (file.Extension != ".xmile") throw new ArgumentException("Файл должен иметь расширение .xmile");
 
 			xml = XDocument.Load(filepath);
 
-			var schemas = new XmlSchemaSet();
-			schemas.Add(NAMESPACE, SCHEMA_URI);
-			xml.Validate(schemas, (sender, e) => {
-				if (e.Exception != null) throw e.Exception;
-			});
+			if (validate)
+			{
+				var schemas = new XmlSchemaSet();
+				var reader = new StreamReader(SCHEMA_LOCATION);
+				var xmlReader = XmlReader.Create(reader);
+				var schema = XmlSchema.Read(xmlReader, null);
+
+				schemas.Add(schema);
+				xml.Validate(schemas, (sender, e) =>
+				{
+					if (e.Exception != null)
+					{
+						throw new XmlSchemaValidationException("Ошибка валидации:\n" + e.Message,
+							e.Exception);
+					}
+				});
+			}
 		}
 
 		public Graph CreateGraph(string defaultStock)
@@ -48,14 +61,16 @@ namespace sdproject
 			 */
 			var inflows = xmlStocks.SelectMany(stock =>
 				from e in stock.Elements(prefix + "inflow")
-				select new {
+				select new
+				{
 					StockID = stock.Attribute("name").Value,
 					FlowID = e.Value
 				});
 
 			var outflows = xmlStocks.SelectMany(stock =>
 				from e in stock.Elements(prefix + "outflow")
-				select new {
+				select new
+				{
 					StockID = stock.Attribute("name").Value,
 					FlowID = e.Value
 				});
