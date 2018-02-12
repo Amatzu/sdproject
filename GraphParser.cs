@@ -25,21 +25,20 @@ namespace sdproject
 
 			xml = XDocument.Load(filepath);
 
-			if (validate)
+			if (!validate) return;
+
+			using (var reader = new StreamReader(SCHEMA_LOCATION))
+			using (var xmlReader = XmlReader.Create(reader))
 			{
 				var schemas = new XmlSchemaSet();
-				var reader = new StreamReader(SCHEMA_LOCATION);
-				var xmlReader = XmlReader.Create(reader);
 				var schema = XmlSchema.Read(xmlReader, null);
 
 				schemas.Add(schema);
 				xml.Validate(schemas, (sender, e) =>
 				{
-					if (e.Exception != null)
-					{
-						throw new XmlSchemaValidationException("Ошибка валидации:\n" + e.Message,
-							e.Exception);
-					}
+					if (e.Exception == null) return;
+					throw new XmlSchemaValidationException("Ошибка валидации:\n" + e.Message,
+						e.Exception);
 				});
 			}
 		}
