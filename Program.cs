@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace sdproject
 {
@@ -14,19 +10,24 @@ namespace sdproject
 
 		static void Main(string[] args)
 		{
-			//if(args.Length != 1)
-			//{
-			//	Console.WriteLine("Программе требуется один аргумент командной строки.");
-			//	exit(ERRORCODE_WRONG_ARGS);
-			//}
-			//string filepath = args[0];
-
+#if !DEBUG
+			if(args.Length != 1)
+			{
+				Console.WriteLine("Программе требуется один аргумент командной строки.");
+				exit(ERRORCODE_WRONG_ARGS);
+			}
+			string filepath = args[0];
+#else
 			string filepath = AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\Borneo.xmile";
+#endif
+			Console.WriteLine("Выполнить валидацию XML? (Y/N)");
+			ConsoleKey key = Console.ReadKey(true).Key;
+			bool validate = key == ConsoleKey.Y;
 
 			try
 			{
-				var parser = new GraphParser(filepath);
-				var graph = parser.CreateGraph("DEFAULT_STOCK");
+				var parser = new GraphParser(filepath, validate);
+				var graph = parser.CreateGraph("[Global]");
 				var analyzer = new GraphAnalyzer(graph);
 
 				throw new NotImplementedException("NYI");
