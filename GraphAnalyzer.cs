@@ -5,7 +5,7 @@ namespace sdproject
 {
 	internal class GraphAnalyzer
 	{
-		private Graph graph;
+		private readonly Graph graph;
 		public Dictionary<string, Pattern> PatternLibrary { get; private set; }
 
 		public GraphAnalyzer(Graph graph)
@@ -16,9 +16,9 @@ namespace sdproject
 
 		public void FindPatterns()
 		{
-			int patternSize = graph.VertexCount / 2;
-			
-			//todo: incindency matrix
+			int maxPatternSize = graph.VertexCount / 2;
+
+			//TODO: incindency matrix
 		}
 	}
 }

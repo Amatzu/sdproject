@@ -70,13 +70,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Flow.cs" />
-    <Compile Include="GraphAnalyzer.cs" />
-    <Compile Include="GraphParser.cs" />
-    <Compile Include="Pattern.cs" />
+    <Compile Include="src\Flow.cs" />
+    <Compile Include="src\GraphAnalyzer.cs" />
+    <Compile Include="src\GraphParser.cs" />
+    <Compile Include="tests\GraphTests.cs" />
+    <Compile Include="tests\MathTests.cs" />
+    <Compile Include="src\MathUtils.cs" />
+    <Compile Include="src\Pattern.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

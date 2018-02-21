@@ -4,16 +4,15 @@ using System.IO;
 
 namespace sdproject
 {
-	class UnitTests
+	internal class GraphTests
 	{
-		[Test]
-		[TestCase("teacup", 2, 1), TestCase("Borneo", 19, 23)]
+		[Test, TestCase("teacup", 2, 1), TestCase("Borneo", 19, 23)]
 		public void GraphParsingTest(string filename, int expectedVertices, int expectedEdges)
 		{
-			string filepath = AppDomain.CurrentDomain.BaseDirectory + 
+			string filepath = AppDomain.CurrentDomain.BaseDirectory +
 			                  @"..\..\Templates\" + filename + ".xmile";
 			var parser = new GraphParser(filepath, false);
-			var graph = parser.CreateGraph("DEFAULT");
+			var graph  = parser.CreateGraph("DEFAULT");
 
 			Assert.AreEqual(graph.VertexCount, expectedVertices);
 			Assert.AreEqual(graph.EdgeCount, expectedEdges);

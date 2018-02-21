@@ -2,13 +2,13 @@
 
 namespace sdproject
 {
-	class Program
+	internal class Program
 	{
-		const int ERRORCODE_OK = 0,
-			ERRORCODE_FAIL = 1,
-			ERRORCODE_WRONG_ARGS = 2;
+		private const int ERRORCODE_OK = 0,
+						  ERRORCODE_FAIL = 1,
+						  ERRORCODE_WRONG_ARGS = 2;
 
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
 #if !DEBUG
 			if(args.Length != 1)
@@ -22,14 +22,15 @@ namespace sdproject
 #endif
 			Console.WriteLine("Выполнить валидацию XML? (Y/N)");
 			ConsoleKey key = Console.ReadKey(true).Key;
-			bool validate = key == ConsoleKey.Y;
+			bool shouldValidate = key == ConsoleKey.Y;
 
 			try
 			{
-				var parser = new GraphParser(filepath, validate);
+				var parser = new GraphParser(filepath, shouldValidate);
 				var graph = parser.CreateGraph("[Global]");
 				var analyzer = new GraphAnalyzer(graph);
 
+				//TODO: main flow
 				throw new NotImplementedException("NYI");
 			}
 			catch(Exception e)

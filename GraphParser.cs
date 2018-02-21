@@ -8,12 +8,12 @@ using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
 
 namespace sdproject
 {
-	class GraphParser
+	internal class GraphParser
 	{
 		private const string NAMESPACE = @"http://docs.oasis-open.org/xmile/ns/XMILE/v1.0";
-		private static readonly	string SCHEMA_LOCATION = AppDomain.CurrentDomain.BaseDirectory + 
+		private static readonly	string SCHEMA_LOCATION = AppDomain.CurrentDomain.BaseDirectory +
 		                       	                         @"..\..\Templates\schema.xsd";
-		private XDocument xml;
+		private readonly XDocument xml;
 
 		public GraphParser(string filepath, bool validate = true)
 		{

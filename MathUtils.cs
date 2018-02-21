@@ -10,11 +10,10 @@ namespace sdproject
 	internal class MathUtils
 	{
 		/// <summary>
-		/// Максимальное количество миноров размера minorSize в квадратной матрице размера matrixSize.
+		/// Максимальное количество миноров заданного размера в квадратной матрице.
 		/// </summary>
-		/// <param name="matrixSize"></param>
-		/// <param name="minorSize"></param>
-		/// <returns></returns>
+		/// <param name="matrixSize">Размер матрицы</param>
+		/// <param name="minorSize">Размер минора</param>
 		public static int MaxMinorAmount(int matrixSize, int minorSize)
 		{
 			Debug.Assert(matrixSize > 0);
@@ -28,7 +27,6 @@ namespace sdproject
 		/// </summary>
 		/// <param name="n">Номер симплексного числа</param>
 		/// <param name="r">Порядок симплексного числа</param>
-		/// <returns></returns>
 		private static int simplexNumber(int n, int r)
 		{
 			Debug.Assert(n >= 0);
