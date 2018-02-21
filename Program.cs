@@ -10,15 +10,15 @@ namespace sdproject
 
 		private static void Main(string[] args)
 		{
-#if !DEBUG
-			if(args.Length != 1)
+#if DEBUG
+			string filepath = AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\Borneo.xmile";
+#else
+			if (args.Length != 1)
 			{
 				Console.WriteLine("Программе требуется один аргумент командной строки.");
 				exit(ERRORCODE_WRONG_ARGS);
 			}
 			string filepath = args[0];
-#else
-			string filepath = AppDomain.CurrentDomain.BaseDirectory + @"..\..\Templates\Borneo.xmile";
 #endif
 			Console.WriteLine("Выполнить валидацию XML? (Y/N)");
 			ConsoleKey key = Console.ReadKey(true).Key;
