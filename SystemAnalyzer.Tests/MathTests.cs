@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace sdproject
+namespace SystemAnalyzer.Tests
 {
 	internal class MathTests
 	{

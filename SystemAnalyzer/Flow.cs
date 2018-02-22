@@ -1,7 +1,10 @@
 ﻿using QuickGraph;
 
-namespace sdproject
+namespace SystemAnalyzer
 {
+	/// <summary>
+	/// Представляет поток анализируемой системы.
+	/// </summary>
 	internal class Flow : IEdge<string>
 	{
 		public string Name { get; }

@@ -1,4 +1,4 @@
-﻿namespace sdproject
+﻿namespace SystemAnalyzer
 {
 	//TODO: pattern class
 	internal class Pattern

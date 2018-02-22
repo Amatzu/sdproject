@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace sdproject
+namespace SystemAnalyzer
 {
 	internal class MathUtils
 	{
@@ -15,7 +15,7 @@ namespace sdproject
 			Debug.Assert(minorSize > 0);
 			Debug.Assert(matrixSize >= minorSize);
 
-			return simplexNumber(matrixSize - minorSize + 1, minorSize);
+			return SimplexNumber(matrixSize - minorSize + 1, minorSize);
 		}
 
 		/// <summary>
@@ -23,7 +23,7 @@ namespace sdproject
 		/// </summary>
 		/// <param name="n">Номер симплексного числа</param>
 		/// <param name="r">Порядок симплексного числа</param>
-		private static int simplexNumber(int n, int r)
+		private static int SimplexNumber(int n, int r)
 		{
 			Debug.Assert(n >= 0);
 			Debug.Assert(r > 0);

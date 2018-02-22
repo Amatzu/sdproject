@@ -4,15 +4,18 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
-using Graph = QuickGraph.BidirectionalGraph<string, sdproject.Flow>;
+using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Flow>;
 
-namespace sdproject
+namespace SystemAnalyzer
 {
+	/// <summary>
+	/// Представляет парсер, составляющий граф на основе системы, описанной в файле XMILE.
+	/// </summary>
 	internal class GraphParser
 	{
 		private const string NAMESPACE = @"http://docs.oasis-open.org/xmile/ns/XMILE/v1.0";
 		private static readonly	string SCHEMA_LOCATION = AppDomain.CurrentDomain.BaseDirectory +
-		                       	                         @"..\..\Templates\schema.xsd";
+		                       							 @"..\..\Templates\schema.xsd";
 		private readonly XDocument xml;
 
 		public GraphParser(string filepath, bool validate = true)
@@ -45,31 +48,27 @@ namespace sdproject
 
 		public Graph CreateGraph(string defaultStock)
 		{
-			string prefix = "{" + NAMESPACE + "}";
+			const string PREFIX = "{" + NAMESPACE + "}";
 
-			XElement root = xml.Root.Element(prefix + "model").Element(prefix + "variables");
-			var xmlStocks = root.Elements(prefix + "stock");
+			XElement root = xml.Root.Element(PREFIX + "model").Element(PREFIX + "variables");
+			var xmlStocks = root.Elements(PREFIX + "stock");
 
 			//Выборка названий стоков
 			var stocks = xmlStocks.Select(stock => stock.Attribute("name").Value).ToList();
 			stocks.Add(defaultStock);
 
-			/*
-			 * Для выборки потоков (т.е. рёбер графа) используем реляционную модель данных.
-			 * Возьмём таблицы INFLOWS и OUTFLOWS с колонками STOCK_ID, FLOW_ID и соединим их по FLOW_ID.
-			 */
+			// Для выборки потоков (т.е. рёбер графа) используем реляционную модель данных.
+			// Возьмём таблицы INFLOWS и OUTFLOWS с колонками STOCK_ID, FLOW_ID и соединим их по FLOW_ID.
 			var inflows = xmlStocks.SelectMany(stock =>
-				from e in stock.Elements(prefix + "inflow")
-				select new
-				{
+				from e in stock.Elements(PREFIX + "inflow")
+				select new {
 					StockID = stock.Attribute("name").Value,
 					FlowID = e.Value
 				});
 
 			var outflows = xmlStocks.SelectMany(stock =>
-				from e in stock.Elements(prefix + "outflow")
-				select new
-				{
+				from e in stock.Elements(PREFIX + "outflow")
+				select new {
 					StockID = stock.Attribute("name").Value,
 					FlowID = e.Value
 				});

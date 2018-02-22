@@ -1,12 +1,15 @@
 ﻿using System;
 
-namespace sdproject
+namespace SystemAnalyzer
 {
 	internal class Program
 	{
-		private const int ERRORCODE_OK = 0,
-						  ERRORCODE_FAIL = 1,
-						  ERRORCODE_WRONG_ARGS = 2;
+		private enum ErrorCode
+		{
+			Success = 0,
+			Fail = 1,
+			ArgumentsError = 2
+		}
 
 		private static void Main(string[] args)
 		{
@@ -16,7 +19,7 @@ namespace sdproject
 			if (args.Length != 1)
 			{
 				Console.WriteLine("Программе требуется один аргумент командной строки.");
-				exit(ERRORCODE_WRONG_ARGS);
+				Exit(ErrorCode.ArgumentsError);
 			}
 			string filepath = args[0];
 #endif
@@ -37,17 +40,17 @@ namespace sdproject
 			{
 				Console.WriteLine(e.Message);
 				if (e.InnerException != null) Console.WriteLine(e.InnerException.Message);
-				exit(ERRORCODE_FAIL);
+				Exit(ErrorCode.Fail);
 			}
 
-			exit(ERRORCODE_OK);
+			Exit(ErrorCode.Success);
 		}
 
-		private static void exit(int errorcode)
+		private static void Exit(ErrorCode code)
 		{
 			Console.WriteLine("\nНажмите любую клавишу для выхода.");
 			Console.ReadKey();
-			Environment.Exit(errorcode);
+			Environment.Exit((int)code);
 		}
 	}
 }
