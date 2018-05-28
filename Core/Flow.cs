@@ -1,6 +1,6 @@
 ﻿using QuickGraph;
 
-namespace SystemAnalyzer
+namespace SystemAnalyzer.Core
 {
 	/// <summary>
 	/// Представляет поток анализируемой системы.
@@ -20,7 +20,10 @@ namespace SystemAnalyzer
 
 		public override string ToString() => string.Concat(Name, ": ", Source, " -> ", Target);
 
-		public override int GetHashCode() => Name.GetHashCode() + (Source.GetHashCode() ^ Target.GetHashCode());
+		public override int GetHashCode()
+		{
+			return unchecked (Name.GetHashCode() - Source.GetHashCode() + Target.GetHashCode());
+		}
 
 		public override bool Equals(object obj)
 		{

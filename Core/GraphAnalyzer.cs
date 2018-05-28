@@ -1,8 +1,7 @@
-﻿using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Flow>;
-using System.Collections.Generic;
-using QuickGraph;
+﻿using System.Collections.Generic;
+using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Core.Flow>;
 
-namespace SystemAnalyzer
+namespace SystemAnalyzer.Core
 {
 	/// <summary>
 	/// Представляет анализатор, выявляющий паттерны в графе и составляющий их библиотеку.

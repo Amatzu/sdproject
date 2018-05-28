@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SystemAnalyzer
+namespace SystemAnalyzer.Core
 {
 	internal class Program
 	{

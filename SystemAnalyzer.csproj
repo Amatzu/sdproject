@@ -34,16 +34,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug + Validation|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug + Validation\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
   <PropertyGroup>
     <StartupObject>SystemAnalyzer.Program</StartupObject>
   </PropertyGroup>
@@ -74,14 +64,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SystemAnalyzer.Tests\GraphTests.cs" />
-    <Compile Include="SystemAnalyzer.Tests\MathTests.cs" />
-    <Compile Include="SystemAnalyzer\Flow.cs" />
-    <Compile Include="SystemAnalyzer\GraphAnalyzer.cs" />
-    <Compile Include="SystemAnalyzer\GraphParser.cs" />
-    <Compile Include="SystemAnalyzer\MathUtils.cs" />
-    <Compile Include="SystemAnalyzer\Pattern.cs" />
-    <Compile Include="SystemAnalyzer\Program.cs" />
+    <Compile Include="Tests\GraphTests.cs" />
+    <Compile Include="Tests\MathTests.cs" />
+    <Compile Include="Core\AdjacencyMatrix.cs" />
+    <Compile Include="Core\Flow.cs" />
+    <Compile Include="Core\GraphAnalyzer.cs" />
+    <Compile Include="Core\GraphParser.cs" />
+    <Compile Include="Core\MathUtils.cs" />
+    <Compile Include="Core\Pattern.cs" />
+    <Compile Include="Core\Program.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -92,7 +83,9 @@
     </None>
     <None Include="Templates\teacup.xmile" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

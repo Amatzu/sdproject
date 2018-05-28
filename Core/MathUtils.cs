@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace SystemAnalyzer
+namespace SystemAnalyzer.Core
 {
 	internal class MathUtils
 	{

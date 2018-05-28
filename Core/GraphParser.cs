@@ -4,9 +4,9 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
-using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Flow>;
+using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Core.Flow>;
 
-namespace SystemAnalyzer
+namespace SystemAnalyzer.Core
 {
 	/// <summary>
 	/// Представляет парсер, составляющий граф на основе системы, описанной в файле XMILE.
@@ -37,8 +37,7 @@ namespace SystemAnalyzer
 				var schema = XmlSchema.Read(xmlReader, null);
 
 				schemas.Add(schema);
-				xml.Validate(schemas, (sender, e) =>
-				{
+				xml.Validate(schemas, (sender, e) => {
 					if (e.Exception == null) return;
 					throw new XmlSchemaValidationException("Ошибка валидации:\n" + e.Message,
 						e.Exception);

@@ -1,4 +1,4 @@
-﻿namespace SystemAnalyzer
+﻿namespace SystemAnalyzer.Core
 {
 	//TODO: pattern class
 	internal class Pattern

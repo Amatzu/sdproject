@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using SystemAnalyzer.Core;
+using NUnit.Framework;
 
 namespace SystemAnalyzer.Tests
 {
