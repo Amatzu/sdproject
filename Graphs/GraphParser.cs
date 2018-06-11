@@ -4,9 +4,9 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
-using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Core.Flow>;
+using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Graphs.Flow>;
 
-namespace SystemAnalyzer.Core
+namespace SystemAnalyzer.Graphs
 {
 	/// <summary>
 	/// Представляет парсер, составляющий граф на основе системы, описанной в файле XMILE.

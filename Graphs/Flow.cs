@@ -1,6 +1,6 @@
 ﻿using QuickGraph;
 
-namespace SystemAnalyzer.Core
+namespace SystemAnalyzer.Graphs
 {
 	/// <summary>
 	/// Представляет поток анализируемой системы.
@@ -28,7 +28,7 @@ namespace SystemAnalyzer.Core
 		public override bool Equals(object obj)
 		{
 			var flow = obj as Flow;
-			return Name == flow.Name &&
+			return Name.Equals(flow.Name) &&
 			       Source == flow.Source &&
 			       Target == flow.Target;
 		}

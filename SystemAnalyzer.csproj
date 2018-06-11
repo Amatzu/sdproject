@@ -63,16 +63,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphs\Edge.cs" />
+    <Compile Include="Matrices\MinorCache.cs" />
+    <Compile Include="Matrices\MinorIterator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\GraphTests.cs" />
-    <Compile Include="Tests\MathTests.cs" />
-    <Compile Include="Core\AdjacencyMatrix.cs" />
-    <Compile Include="Core\Flow.cs" />
-    <Compile Include="Core\GraphAnalyzer.cs" />
-    <Compile Include="Core\GraphParser.cs" />
-    <Compile Include="Core\MathUtils.cs" />
-    <Compile Include="Core\Pattern.cs" />
-    <Compile Include="Core\Program.cs" />
+    <Compile Include="Matrices\AdjacencyMatrix.cs" />
+    <Compile Include="Graphs\Flow.cs" />
+    <Compile Include="Graphs\GraphAnalyzer.cs" />
+    <Compile Include="Graphs\GraphParser.cs" />
+    <Compile Include="Graphs\Pattern.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Tests\UtilTests.cs" />
+    <Compile Include="Utils\MathUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

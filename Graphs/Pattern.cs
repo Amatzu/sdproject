@@ -1,9 +1,9 @@
-﻿namespace SystemAnalyzer.Core
+﻿namespace SystemAnalyzer.Graphs
 {
 	//TODO: pattern class
 	internal class Pattern
 	{
-		public sbyte[,] Matrix { get; private set; }
+		public int[,] Matrix { get; private set; }
 
 		public Pattern()
 		{

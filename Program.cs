@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
+using SystemAnalyzer.Graphs;
+using SystemAnalyzer.Matrices;
 
-namespace SystemAnalyzer.Core
+namespace SystemAnalyzer
 {
 	internal class Program
 	{
@@ -29,17 +32,19 @@ namespace SystemAnalyzer.Core
 
 			try
 			{
+                Console.WriteLine("Парсинг графа...");
 				var parser = new GraphParser(filepath, shouldValidate);
-				var graph = parser.CreateGraph("[Global]");
-				var analyzer = new GraphAnalyzer(graph);
+				var graph = parser.CreateGraph("[GLOBAL]");
 
-				//TODO: main flow
-				throw new NotImplementedException("NYI");
+			    Console.WriteLine("Анализ матрицы смежности...");
+
+			    var analyzer = new GraphAnalyzer(graph);
+			    var patterns = analyzer.PotentialPatterns;
 			}
 			catch(Exception e)
 			{
-				Console.WriteLine(e.Message);
-				if (e.InnerException != null) Console.WriteLine(e.InnerException.Message);
+                Console.WriteLine(e.Message);
+			    Console.WriteLine(e.StackTrace);
 				Exit(ErrorCode.Fail);
 			}
 

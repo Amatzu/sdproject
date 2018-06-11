@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using SystemAnalyzer.Core;
+using SystemAnalyzer.Graphs;
 using NUnit.Framework;
 
 namespace SystemAnalyzer.Tests
@@ -23,10 +23,7 @@ namespace SystemAnalyzer.Tests
 		{
 			Assert.Throws<ArgumentException>(() => new GraphParser(@"/\|*:?"));
 
-			Assert.Throws<FileNotFoundException>(() => new GraphParser(@"Non-existant file!"));
-
-			string filepath = AppDomain.CurrentDomain.BaseDirectory + @"..\..\UnitTests.cs";
-			Assert.Throws<ArgumentException>(() => new GraphParser(filepath));
+			Assert.Throws<FileNotFoundException>(() => new GraphParser("Non-existant file!"));
 		}
 	}
 }
