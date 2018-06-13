@@ -65,7 +65,7 @@
   <ItemGroup>
     <Compile Include="Graphs\Edge.cs" />
     <Compile Include="Matrices\MinorCache.cs" />
-    <Compile Include="Matrices\MinorIterator.cs" />
+    <Compile Include="Matrices\CombinationIterator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\GraphTests.cs" />
     <Compile Include="Matrices\AdjacencyMatrix.cs" />

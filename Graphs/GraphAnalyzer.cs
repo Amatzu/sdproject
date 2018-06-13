@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SystemAnalyzer.Matrices;
 
@@ -35,7 +36,7 @@ namespace SystemAnalyzer.Graphs
 		    }
 
             //todo
-		    FindAllMinors();
+		    FindPotentialPatterns();
 		}
 
 	    private void FindPotentialPatterns()
@@ -43,20 +44,21 @@ namespace SystemAnalyzer.Graphs
 	        var cache = new MinorCache(adjacency);
 
 	        //Находим миноры размера 2
-	        var minors = MinorsOfSize(2);
-	        foreach (var minor in minors)
+	        for (int i = 0; i < adjacency.Vertices; i++)
 	        {
-	            int i = minor[0];
-	            int j = minor[1];
+	            for (int j = 0; j < adjacency.Vertices; j++)
+	            {
+                    if (i == j) continue;
 
-	            int det = Matrix[i, i] * Matrix[j, j] - Matrix[i, j] * Matrix[j, i];
-	            cache[minor] = det;
+	                int det = Matrix[i, i] * Matrix[j, j] - Matrix[i, j] * Matrix[j, i];
+	                cache[i, j] = det;
+	            }
 	        }
 
 	        //Находим остальные миноры рекурсивно
 	        for (int n = 3; n <= adjacency.MaxMinorSize; n++)
 	        {
-	            minors = MinorsOfSize(n);
+	            var minors = MinorsOfSize(n);
 	            foreach (var minor in minors)
 	            {
 	                int det = 0;
@@ -81,16 +83,18 @@ namespace SystemAnalyzer.Graphs
 	        //Если минор связный, вносим в словарь потенциальных паттернов
 	        if (IsConnected(minor))
 	        {
-	            if (!PotentialPatterns[n - 3].ContainsKey(det))
+	            var patternMap = PotentialPatterns[n - 3];
+
+	            if (!patternMap.ContainsKey(det))
 	            {
                     var list = new List<int[]>();
-	                PotentialPatterns[n - 3].Add(det, list);
+	                patternMap.Add(det, list);
 	            }
 
 	            var minorCopy = new int[minor.Length];
-                Array.Copy(minor, minorCopy, minor.Length);
+                minor.CopyTo(minorCopy, 0);
 
-	            PotentialPatterns[n - 3][det].Insert(0, minorCopy);
+	            patternMap[det].Insert(0, minorCopy);
 	        }
 	    }
 
@@ -127,25 +131,28 @@ namespace SystemAnalyzer.Graphs
 
 	    private bool IsConnected(int[] minor)
 	    {
-	        foreach (int i in minor)
+	        int dfs(int source, bool[] visited)
 	        {
-	            bool isConnected = false;
+	            int visitedVertices = 1;
+	            visited[source] = true;
 
-	            foreach (int j in minor)
+	            for (int i = 1; i < minor.Length; i++)
 	            {
-	                if (i == j) continue;
+                    if (visited[i]) continue;
 
-	                if (Matrix[i, j] > 0 || Matrix[j, i] > 0)
+	                int u = minor[source];
+	                int v = minor[i];
+	                if (Matrix[u, v] > 0 || Matrix[v, u] > 0)
 	                {
-	                    isConnected = true;
-                        break;
+	                    visitedVertices += dfs(i, visited);
 	                }
 	            }
 
-	            if (!isConnected) return false;
+	            return visitedVertices;
 	        }
 
-	        return true;
+	        var connectedVertices = new bool[minor.Length];
+	        return dfs(0, connectedVertices) == minor.Length;
 	    }
 
 	    private IEnumerable<int[]> MinorsOfSize(int n)
