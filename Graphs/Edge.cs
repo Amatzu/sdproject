@@ -2,10 +2,10 @@
 {
     internal struct Edge
     {
-        public readonly string Source;
-        public readonly string Target;
+        public readonly Stock Source;
+        public readonly Stock Target;
 
-        private Edge(string source, string target)
+        private Edge(Stock source, Stock target)
         {
             Source = source;
             Target = target;

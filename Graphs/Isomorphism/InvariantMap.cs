@@ -4,14 +4,18 @@ using SystemAnalyzer.Matrices;
 
 using Container = System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<int[]>>;
 
-namespace SystemAnalyzer.Graphs
+namespace SystemAnalyzer.Graphs.Isomorphism
 {
-    internal class PotentialPatternMap
+    /// <summary>
+    /// Группирует потенциальные паттерны по инвариантам и отсеивает те из них, для которых
+    /// невозможно выбрать два непересекающихся вхождения.
+    /// </summary>
+    public class InvariantMap
     {
-        private AdjacencyMatrix matrix;
+        private readonly AdjacencyMatrix matrix;
         private readonly Container[] container;
 
-        public PotentialPatternMap(AdjacencyMatrix matrix)
+        public InvariantMap(AdjacencyMatrix matrix)
         {
             this.matrix = matrix;
             container = new Container[matrix.MaxMinorSize - 2];
@@ -46,7 +50,7 @@ namespace SystemAnalyzer.Graphs
         /// какую-либо общую вершину.
         /// </summary>
         /// <param name="order">Порядок для просеивания</param>
-        public void Sift(int order)
+        public void Filter(int order)
         {
             var hashes = this[order].Keys.ToArray();
 

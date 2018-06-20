@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using SystemAnalyzer.Graphs;
-using SystemAnalyzer.Matrices;
 
 namespace SystemAnalyzer
 {
+    //TODO: refactoring
 	internal class Program
 	{
 		private enum ErrorCode
@@ -29,24 +28,28 @@ namespace SystemAnalyzer
 			Console.WriteLine("Выполнить валидацию XML? (Y/N)");
 			ConsoleKey key = Console.ReadKey(true).Key;
 			bool shouldValidate = key == ConsoleKey.Y;
-
+#if !DEBUG
 			try
 			{
+#endif
                 Console.WriteLine("Парсинг графа...");
 				var parser = new GraphParser(filepath, shouldValidate);
 				var graph = parser.CreateGraph("[GLOBAL]");
 
 			    Console.WriteLine("Анализ матрицы смежности...");
-
 			    var analyzer = new GraphAnalyzer(graph);
-			    var patterns = analyzer.PotentialPatterns;
-			}
+
+		        Console.WriteLine("Проверка потенциальных паттернов на изоморфизм...");
+                analyzer.FindPatterns();
+#if !DEBUG
+            }
 			catch(Exception e)
 			{
                 Console.WriteLine(e.Message);
 			    Console.WriteLine(e.StackTrace);
 				Exit(ErrorCode.Fail);
 			}
+#endif
 
 			Exit(ErrorCode.Success);
 		}

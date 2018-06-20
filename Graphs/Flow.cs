@@ -5,32 +5,45 @@ namespace SystemAnalyzer.Graphs
 	/// <summary>
 	/// Представляет поток анализируемой системы.
 	/// </summary>
-	internal class Flow : IEdge<string>
+	public sealed class Flow : IEdge<Stock>
 	{
 		public string Name { get; }
-		public string Source { get; }
-		public string Target { get; }
+		public Stock Source { get; }
+		public Stock Target { get; }
 
-		public Flow(string name, string source, string target)
+		public Flow(string name, Stock source, Stock target)
 		{
 			Name = name;
 			Source = source;
 			Target = target;
 		}
 
-		public override string ToString() => string.Concat(Name, ": ", Source, " -> ", Target);
+		public override string ToString()
+	    {
+	        return string.Concat(Name, ": ", Source, " -> ", Target);
+	    }
 
-		public override int GetHashCode()
+	    public override bool Equals(object that)
 		{
-			return unchecked (Name.GetHashCode() - Source.GetHashCode() + Target.GetHashCode());
+		    if (that is Flow flow)
+		    {
+		        return Name.Equals(flow.Name) &&
+		               Source == flow.Source &&
+		               Target == flow.Target;
+		    }
+
+		    return false;
 		}
 
-		public override bool Equals(object obj)
-		{
-			var flow = obj as Flow;
-			return Name.Equals(flow.Name) &&
-			       Source == flow.Source &&
-			       Target == flow.Target;
-		}
+	    public override int GetHashCode()
+	    {
+	        unchecked
+	        {
+	            var hashCode = (Name != null ? Name.GetHashCode() : 0);
+	            hashCode = (hashCode * 397) ^ (Source != null ? Source.GetHashCode() : 0);
+	            hashCode = (hashCode * 397) ^ (Target != null ? Target.GetHashCode() : 0);
+	            return hashCode;
+	        }
+	    }
 	}
 }

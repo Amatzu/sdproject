@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using SystemAnalyzer.Graphs;
+using SystemAnalyzer.Graphs.Isomorphism;
 using SystemAnalyzer.Utils.Extensions;
-
-using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Graphs.Flow>;
 
 namespace SystemAnalyzer.Matrices
 {
-    internal class AdjacencyMatrix
+    public class AdjacencyMatrix
     {
         public string[] VertexMap { get; private set; }
         public int[,] Matrix { get; private set; }
@@ -25,14 +24,14 @@ namespace SystemAnalyzer.Matrices
         {
             var vertices = from v in graph.Vertices
                            orderby v ascending
-                           select v;
+                           select v.Name;
 
             string[] vertexMap = vertices.ToArray();
 
             var matrix          = new int[vertexMap.Length, vertexMap.Length];
             var adjacencyMatrix = new AdjacencyMatrix(vertexMap, matrix);
 
-            var edgeGroups = from e in graph.Edges
+            var edgeGroups = from e in graph.InnerFlows
                              group e by Edge.FromFlow(e)
                              into flowGroup
                              select flowGroup;
@@ -41,16 +40,16 @@ namespace SystemAnalyzer.Matrices
             {
                 Edge edge      = edgeGroup.Key;
                 int  edgeCount = edgeGroup.Count();
-                adjacencyMatrix[edge.Source, edge.Target] = edgeCount;
+                adjacencyMatrix[edge.Source.Name, edge.Target.Name] = edgeCount;
             }
 
             return adjacencyMatrix;
         }
 
-        	public PotentialPatternMap FindPotentialPatterns()
+        	public InvariantMap FindPotentialPatterns()
 	    {
 	        var cache = new MinorCache(this);
-	        var patternMap = new PotentialPatternMap(this);
+	        var patternMap = new InvariantMap(this);
 
 	        //Находим миноры размера 2
 	        for (int i = 0; i < Vertices; i++)
@@ -82,7 +81,7 @@ namespace SystemAnalyzer.Matrices
                     if(MinorIsConnected(minor)) patternMap.Add(minor, det);
 	            }
 
-	            patternMap.Sift(n);
+	            patternMap.Filter(n);
 	        }
 
 	        return patternMap;

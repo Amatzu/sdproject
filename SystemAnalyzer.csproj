@@ -81,8 +81,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphs\Edge.cs" />
-    <Compile Include="Graphs\InvariantHash.cs" />
-    <Compile Include="Graphs\PotentialPatternMap.cs" />
+    <Compile Include="Graphs\Isomorphism\EdgeCount.cs" />
+    <Compile Include="Graphs\Graph.cs" />
+    <Compile Include="Graphs\Isomorphism\InvariantMap.cs" />
+    <Compile Include="Graphs\Isomorphism\IsomorphismChecker.cs" />
+    <Compile Include="Graphs\Stock.cs" />
     <Compile Include="Matrices\MinorCache.cs" />
     <Compile Include="Matrices\CombinationIterator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -91,10 +94,10 @@
     <Compile Include="Graphs\Flow.cs" />
     <Compile Include="Graphs\GraphAnalyzer.cs" />
     <Compile Include="Graphs\GraphParser.cs" />
-    <Compile Include="Graphs\Pattern.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Tests\UtilTests.cs" />
     <Compile Include="Utils\Extensions\ArrayExtensions.cs" />
+    <Compile Include="Utils\Permutations.cs" />
     <Compile Include="Utils\MathUtils.cs" />
   </ItemGroup>
   <ItemGroup>

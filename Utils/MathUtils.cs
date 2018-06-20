@@ -1,4 +1,7 @@
-﻿namespace SystemAnalyzer.Utils
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace SystemAnalyzer.Utils
 {
     internal static class MathUtils
     {

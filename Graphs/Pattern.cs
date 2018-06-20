@@ -1,13 +1,21 @@
-﻿namespace SystemAnalyzer.Graphs
+﻿using System.Collections.Generic;
+using SystemAnalyzer.Matrices;
+
+namespace SystemAnalyzer.Graphs
 {
-	//TODO: pattern class
-	internal class Pattern
-	{
-		public int[,] Matrix { get; private set; }
+    public class Pattern
+    {
+        public readonly int Determinant;
+        public readonly AdjacencyMatrix Matrix;
+        public List<Graph> Instances { get; private set; }
 
-		public Pattern()
-		{
+        public int Size => Matrix.Vertices;
 
-		}
-	}
+        public Pattern(int determinant, AdjacencyMatrix matrix)
+        {
+            Determinant = determinant;
+            Matrix = matrix;
+            Instances = new List<Graph>();
+        }
+    }
 }

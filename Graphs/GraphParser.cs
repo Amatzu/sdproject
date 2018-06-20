@@ -4,16 +4,15 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
-using Graph = QuickGraph.BidirectionalGraph<string, SystemAnalyzer.Graphs.Flow>;
 
 namespace SystemAnalyzer.Graphs
 {
 	/// <summary>
 	/// Представляет парсер, составляющий граф на основе системы, описанной в файле XMILE.
 	/// </summary>
-	internal class GraphParser
+	public class GraphParser
 	{
-		private const string NAMESPACE = @"http://docs.oasis-open.org/xmile/ns/XMILE/v1.0";
+		private const string NAMESPACE = "http://docs.oasis-open.org/xmile/ns/XMILE/v1.0";
 		private static readonly	string SCHEMA_LOCATION = AppDomain.CurrentDomain.BaseDirectory +
 		                       							 @"..\..\Templates\schema.xsd";
 		private readonly XDocument xml;
@@ -30,6 +29,7 @@ namespace SystemAnalyzer.Graphs
 
 			if (!validate) return;
 
+            //todo: check if schema exists
 			using (var reader = new StreamReader(SCHEMA_LOCATION))
 			using (var xmlReader = XmlReader.Create(reader))
 			{
@@ -45,7 +45,7 @@ namespace SystemAnalyzer.Graphs
 			}
 		}
 
-		public Graph CreateGraph(string defaultStock)
+		public Graph CreateGraph(string defaultStockName)
 		{
 			const string PREFIX = "{" + NAMESPACE + "}";
 
@@ -53,8 +53,7 @@ namespace SystemAnalyzer.Graphs
 			var xmlStocks = root.Elements(PREFIX + "stock");
 
 			//Выборка названий стоков
-			var stocks = xmlStocks.Select(stock => stock.Attribute("name").Value).ToList();
-			stocks.Add(defaultStock);
+			var stocks = xmlStocks.Select(stock => new Stock(stock.Attribute("name").Value)).ToList();
 
 			// Для выборки потоков (т.е. рёбер графа) используем реляционную модель данных.
 			// Возьмём таблицы INFLOWS и OUTFLOWS с колонками STOCK_ID, FLOW_ID и соединим их по FLOW_ID.
@@ -72,20 +71,29 @@ namespace SystemAnalyzer.Graphs
 					FlowID = e.Value
 				});
 
+		    var defaultStock = new Stock(defaultStockName);
+
 			//FULL OUTER JOIN таблиц INFLOWS и OUTFLOWS по STOCK_ID
-			var leftOuter = from outflow in outflows
-							join inflow in inflows on outflow.FlowID equals inflow.FlowID into subflows
-							from subflow in subflows.DefaultIfEmpty()
-							select new Flow(outflow.FlowID, outflow.StockID, subflow?.StockID ?? defaultStock);
+		    var leftOuter =
+		        from outflow in outflows
+		        join inflow in inflows on outflow.FlowID equals inflow.FlowID into subflows
+		        from subflow in subflows.DefaultIfEmpty()
+		        select new Flow(outflow.FlowID,
+		                        new Stock(outflow.StockID),
+		                        subflow?.StockID != null ? new Stock(subflow.StockID) : defaultStock);
 
-			var rightOuter = from inflow in inflows
-							 join outflow in outflows on inflow.FlowID equals outflow.FlowID into subflows
-							 from subflow in subflows.DefaultIfEmpty()
-							 select new Flow(inflow.FlowID, subflow?.StockID ?? defaultStock, inflow.StockID);
+			var rightOuter =
+			    from inflow in inflows
+				join outflow in outflows on inflow.FlowID equals outflow.FlowID into subflows
+				from subflow in subflows.DefaultIfEmpty()
+				select new Flow(inflow.FlowID,
+				                subflow?.StockID != null ? new Stock(subflow.StockID) : defaultStock,
+							    new Stock(inflow.StockID));
 
-			var flows = Enumerable.Union(leftOuter, rightOuter);
+			var flows = leftOuter.Union(rightOuter);
 
-			var graph = new Graph(allowParallelEdges: true);
+			var graph = new Graph(allowParallelEdges: true, defaultStock);
+		    graph.AddVertex(defaultStock);
 			graph.AddVertexRange(stocks);
 			graph.AddEdgeRange(flows);
 			return graph;

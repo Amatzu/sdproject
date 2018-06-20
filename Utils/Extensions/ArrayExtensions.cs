@@ -16,5 +16,18 @@
 
             return newArray;
         }
+
+        public static T[] SelectIndices<T>(this T[] array, int[] selectedIndices)
+        {
+            var newArray = new T[selectedIndices.Length];
+
+            for (int i = 0; i < selectedIndices.Length; i++)
+            {
+                int j = selectedIndices[i];
+                newArray[i] = array[j];
+            }
+
+            return newArray;
+        }
     }
 }
