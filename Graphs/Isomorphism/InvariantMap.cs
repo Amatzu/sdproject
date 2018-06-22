@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SystemAnalyzer.Matrices;
-
-using Container = System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<int[]>>;
+using SystemAnalyzer.Utils.Extensions;
+using Container = System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<string[]>>;
 
 namespace SystemAnalyzer.Graphs.Isomorphism
 {
     /// <summary>
-    /// Группирует потенциальные паттерны по инвариантам и отсеивает те из них, для которых
-    /// невозможно выбрать два непересекающихся вхождения.
+    /// Группирует потенциальные паттерны по инвариантам.
     /// </summary>
-    public class InvariantMap
+    internal class InvariantMap
     {
         private readonly AdjacencyMatrix matrix;
         private readonly Container[] container;
@@ -32,41 +31,20 @@ namespace SystemAnalyzer.Graphs.Isomorphism
         /// <param name="det">Определитель минора</param>
         public void Add(int[] minor, int det)
         {
-            //todo: proper hashcode
             if (!this[minor.Length].ContainsKey(det))
             {
-                var list = new List<int[]>();
+                var list = new List<string[]>();
                 this[minor.Length].Add(det, list);
             }
 
-            var minorCopy = new int[minor.Length];
-            minor.CopyTo(minorCopy, 0);
-
-            this[minor.Length][det].Insert(0, minorCopy);
+            string[] vertices = matrix.VertexMap.SelectIndices(minor);
+            this[minor.Length][det].Insert(0, vertices);
         }
 
-        /// <summary>
-        /// Отбрасывает группы потенциальных паттернов, где все подграфы имеют
-        /// какую-либо общую вершину.
-        /// </summary>
-        /// <param name="order">Порядок для просеивания</param>
-        public void Filter(int order)
+        public InvariantInstance[] GetAllOfSize(int size)
         {
-            var hashes = this[order].Keys.ToArray();
-
-            foreach (var hash in hashes)
-            {
-                var minors = this[order][hash];
-
-                for (int i = 0; i < matrix.Vertices; i++)
-                {
-                    if (minors.All(m => m.Contains(i)))
-                    {
-                        this[order].Remove(hash);
-                        break;
-                    }
-                }
-            }
+            var x = this[size].SelectMany(pair => pair.Value.Select(v => new InvariantInstance(pair.Key, v)));
+            return x.ToArray();
         }
 
         public Container this[int size] => container[size - 3];

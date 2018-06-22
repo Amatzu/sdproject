@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SystemAnalyzer.Graphs.Isomorphism;
+using SystemAnalyzer.Graphs.Patterns;
 using SystemAnalyzer.Matrices;
 using SystemAnalyzer.Utils.Extensions;
-using QuickGraph;
 
 namespace SystemAnalyzer.Graphs
 {
@@ -13,109 +14,223 @@ namespace SystemAnalyzer.Graphs
 	/// </summary>
 	public class GraphAnalyzer
 	{
+        private const int INIT_GROUP = -1;
+        private const int REMOVED_GROUP    = -2;
+
 		private readonly Graph graph;
 	    private readonly AdjacencyMatrix matrix;
 	    private readonly InvariantMap invariants;
+	    public PatternMap Patterns { get; private set; }
 
-		public GraphAnalyzer(Graph graph)
+		public GraphAnalyzer(Graph graph, PatternMap patterns = null)
 		{
 			this.graph = graph;
 		    matrix = AdjacencyMatrix.FromGraph(graph);
-		    invariants = matrix.FindPotentialPatterns();
+		    invariants = matrix.GetInvariantGroups();
+
+            Patterns = patterns ?? new PatternMap(matrix);
+            if (patterns != null) Patterns.ClearInstances();
 		}
 
-	    public List<Pattern> FindPatterns()
+        /// <summary>
+        /// Находит новые паттерны и вхождения существующих.
+        /// </summary>
+	    public bool FindPatterns(out PatternMap patterns)
 	    {
-	        var patterns = new List<Pattern>();
+	        patterns = new PatternMap(matrix);
 
+	        var coveredVertices = new List<string>();
 	        for (int n = matrix.MaxMinorSize; n > 2; n--)
 	        {
-	            var newPatterns = PatternsOfSize(n);
-                patterns.AddRange(newPatterns);
+                patterns[n] = PatternsOfSize(n, coveredVertices);
+                patterns.RemoveSelfIntersecting(n);
+                SelectInstances(patterns, n);
+	            FilterInstances(patterns, n);
+
+	            var vertices = patterns[n].SelectMany(p => p.Instances).SelectMany(i => i.Vertices);
+	            coveredVertices.AddRange(vertices);
+
+	            patterns[n].AddRange(Patterns[n]);
 	        }
 
-	        return FilterPatterns(patterns);
+	        return !patterns.IsEmpty;
 	    }
 
         //todo: find old patterns
-	    private List<Pattern> PatternsOfSize(int n)
+	    private List<Pattern> PatternsOfSize(int size, IEnumerable<string> coveredVertices)
 	    {
-	        var patterns = new List<Pattern>();
+	        var newPatterns = new List<Pattern>();
 
-	        foreach (int key in invariants[n].Keys)
+	        var group = invariants.GetAllOfSize(size)
+	                              .Where(i => !i.Vertices.Any(coveredVertices.Contains))
+	                              .ToArray();
+	        if (group.Length < 2) return newPatterns;
+
+	        var matrices = group.Select(g => graph.SubgraphMatrix(g.Vertices)).ToArray();
+
+	        int[] isomorphismGroups = new int[group.Length];
+	        isomorphismGroups.InitializeWith(INIT_GROUP);
+
+	        foreach (var pattern in Patterns[size])
 	        {
-	            int count = invariants[n][key].Count;
-	            if (count < 2) continue;
+                var checker = new IsomorphismChecker(pattern.Matrix);
 
-	            var subgraphs = GetSubgraphs(n, key);
-	            var matrices  = subgraphs.Select(AdjacencyMatrix.FromGraph).ToArray();
-	            var edgeCount = invariants[n][key].Select(CountEdges).ToArray();
-
-	            int[] isomorphismGroups = new int[count];
-	            for (int i = 0; i < count; i++)
-	                isomorphismGroups[i] = -1;
-
-	            for (int i = 0; i < count - 1; i++)
+	            for (int i = 0; i < group.Length; i++)
 	            {
-	                var checker = new IsomorphismChecker(matrices[i]);
+	                if (group[i].Key != pattern.Key)  continue;
 
-	                for (int j = i + 1; j < count; j++)
+	                bool isomorphic = checker.Check(matrices[i]);
+	                if (isomorphic)
 	                {
-	                    if (isomorphismGroups[j] != -1) continue;
-	                    if (!edgeCount[i].SequenceEqual(edgeCount[j])) continue;
-
-	                    bool isomorphic = checker.Check(matrices[j]);
-	                    if (isomorphic)
-	                    {
-	                        isomorphismGroups[i] = i;
-	                        isomorphismGroups[j] = i;
-	                    }
+	                    isomorphismGroups[i] = REMOVED_GROUP;
+                        pattern.AddInstance(group[i].Vertices);
 	                }
-	            }
-
-	            for (int i = 0; i < count - 1; i++)
-	            {
-                    if (isomorphismGroups[i] != i) continue;
-
-                    var pattern = new Pattern(key, matrices[i]);
-	                for (int j = i + 1; j < count; j++)
-	                {
-                        if (isomorphismGroups[j] != i) continue;
-	                    pattern.Instances.Add(subgraphs[j]);
-	                }
-                    patterns.Add(pattern);
 	            }
 	        }
 
-	        return patterns;
+	        var edgeCount = group.Select(g => CountEdges(g.Vertices)).ToArray();
+	        var checkers  = matrices.Select(m => new IsomorphismChecker(m)).ToArray();
+
+	        for (int i = 0; i < group.Length - 1; i++)
+	        {
+	            for (int j = i + 1; j < group.Length; j++)
+	            {
+	                if (isomorphismGroups[j] > INIT_GROUP) continue;
+	                if (group[i].Key != group[j].Key) continue;
+                    if (group[i].Intersects(group[j])) continue;
+	                if (!edgeCount[i].SequenceEqual(edgeCount[j])) continue;
+
+	                bool isomorphic = checkers[i].Check(matrices[j]);
+	                if (isomorphic)
+	                {
+	                    isomorphismGroups[i] = i;
+	                    isomorphismGroups[j] = i;
+	                }
+	            }
+	        }
+
+	        for (int i = 0; i < group.Length; i++)
+	        {
+                if (isomorphismGroups[i] != i) continue;
+
+                var pattern = new Pattern(group[i].Key, matrices[i]);
+	            pattern.AddInstance(group[i].Vertices);
+
+	            for (int j = i + 1; j < group.Length; j++)
+	            {
+                    if (isomorphismGroups[j] != i) continue;
+	                pattern.AddInstance(group[j].Vertices);
+	            }
+                newPatterns.Add(pattern);
+	        }
+
+	        return newPatterns;
 	    }
 
-	    private List<Pattern> FilterPatterns(List<Pattern> patterns)
+        /// <summary>
+        /// Отбрасывает паттерны, пересекающиеся с паттернами большего размера или
+        /// имеющие менее двух экземпляров.
+        /// </summary>
+	    private void FilterInstances(PatternMap patterns, int n)
 	    {
-            throw new NotImplementedException();
+	        foreach (var smallPattern in patterns[n])
+	        {
+	            for (int m = n + 1; m <= patterns.MaxPatternSize; m++)
+	            {
+	                foreach (var bigPattern in patterns[m])
+	                {
+	                    smallPattern.RemoveIntersectingInstances(bigPattern);
+	                }
+	            }
+	        }
+
+	        patterns.RemoveUniques(n);
 	    }
 
-	    private Graph[] GetSubgraphs(int n, int key)
+        /// <summary>
+        /// Из каждой группы пересекающихся паттернов выбирает как можно большее количество.
+        /// </summary>
+	    private void SelectInstances(PatternMap patterns, int size)
 	    {
-	        var subgraphs = from m in invariants[n][key]
-	                       let vertices = matrix.VertexMap.SelectIndices(m)
-	                       select graph.Subgraph(vertices);
+	        FilterInstances(patterns, size);
+	        if (patterns[size].Count == 0) return;
 
-	        return subgraphs.ToArray();
+	        var allInstances = patterns[size].SelectMany(p => p.Instances).ToArray();
+	        var selectedInstances = new List<PatternInstance>();
+
+	        var instanceGroups = GroupInstances(allInstances);
+
+	        foreach (var group in instanceGroups)
+	        {
+	            var instances = SelectInstancesFromGroup(group);
+	            selectedInstances.AddRange(instances);
+	        }
+
+	        foreach (var pattern in patterns[size])
+	        {
+	            pattern.Instances.RemoveAll(i => !selectedInstances.Contains(i));
+	        }
 	    }
 
-	    private EdgeCount[] CountEdges(int[] vertexIds)
+        /// <summary>
+        /// Группирует экземпляры паттернов по пересечениям.
+        /// </summary>
+	    private IEnumerable<PatternInstance[]> GroupInstances(PatternInstance[] instances)
 	    {
-	        var vertices = matrix.VertexMap.SelectIndices(vertexIds);
-	        var edgeCount = from v in vertices
-	                        let selfEdges = graph.SelfFlows.Count(e => e.Source.Name == v)
-	                        let outEdges  = graph.NonSelfFlows.Count(e => e.Source.Name == v)
-	                        let inEdges   = graph.NonSelfFlows.Count(e => e.Target.Name == v)
-	                        select new EdgeCount(selfEdges, inEdges, outEdges) into count
-	                        orderby count.OutEdges descending,
-	                                count.InEdges descending,
-	                                count.SelfEdges descending
-	                        select count;
+	        var disjointSet = PatternInstance.GetIntersectionGroups(instances);
+
+	        var instancesByGroup = instances.Select((x, i) => new {
+	                                          Value = x,
+	                                          Group = disjointSet.Find(i)
+	                                      });
+	        var groups = instancesByGroup.GroupBy(i => i.Group);
+            var groupValues = groups.Select(g => g.Select(h => h.Value).ToArray());
+
+	        return groupValues;
+	    }
+
+        /// <summary>
+        /// Выбирает максимально возможное количество непересекающихся экземпляров паттернов
+        /// из группы.
+        /// </summary>
+	    private PatternInstance[] SelectInstancesFromGroup(PatternInstance[] instances)
+	    {
+            Debug.Assert(instances != null);
+            Debug.Assert(instances.Length > 0);
+
+            if (instances.Length == 1) return instances;
+
+	        while (instances.AnyTwo((i, j) => i.Intersects(j)))
+	        {
+	            var sortedInstances = from i in instances
+	                                  orderby instances.Count(i.Intersects) descending,
+	                                          i.Pattern.Name descending
+	                                  select i;
+
+	            instances = instances.RemoveItem(sortedInstances.First());
+	        }
+
+	        return instances;
+	    }
+
+        /// <summary>
+        /// Для каждой вершины находит количество исходящих рёбер, входящих рёбер и дуг.
+        /// Результат сортируется по убыванию этих параметров.
+        /// </summary>
+	    private EdgeCount[] CountEdges(string[] vertices)
+	    {
+	        var edgeCount =
+	            from v in vertices
+	            let selfEdges = graph.SelfFlows.Count(e => e.Source.Name == v)
+	            let outEdges  = graph.NonSelfFlows.Count(e => e.Source.Name == v
+	                                                           && vertices.Contains(e.Target.Name))
+                let inEdges   = graph.NonSelfFlows.Count(e => e.Target.Name == v
+	                                                           && vertices.Contains(e.Source.Name))
+	            select new EdgeCount(selfEdges, inEdges, outEdges) into count
+	            orderby count.OutEdges descending,
+	                    count.InEdges descending,
+	                    count.SelfEdges descending
+	            select count;
 
 	        return edgeCount.ToArray();
 	    }

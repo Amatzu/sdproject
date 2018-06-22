@@ -1,6 +1,6 @@
-﻿namespace alg3
+﻿namespace SystemAnalyzer.Utils
 {
-    internal struct DisjointSet
+    public struct DisjointSet
     {
         private readonly int[] parent;
         private readonly int[] rank;

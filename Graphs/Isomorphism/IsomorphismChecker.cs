@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using SystemAnalyzer.Matrices;
 using SystemAnalyzer.Utils;
-using QuickGraph;
 
 namespace SystemAnalyzer.Graphs.Isomorphism
 {

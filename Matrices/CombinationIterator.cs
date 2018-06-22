@@ -2,6 +2,9 @@
 
 namespace SystemAnalyzer.Matrices
 {
+    /// <summary>
+    /// Перечисляет все возможные способы выбора без возвращения и без учёта порядка.
+    /// </summary>
     internal struct CombinationIterator
     {
         private readonly int[] counters;

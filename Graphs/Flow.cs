@@ -8,10 +8,10 @@ namespace SystemAnalyzer.Graphs
 	public sealed class Flow : IEdge<Stock>
 	{
 		public string Name { get; }
-		public Stock Source { get; }
-		public Stock Target { get; }
+		public Stock Source { get; set; }
+	    public Stock Target { get; set; }
 
-		public Flow(string name, Stock source, Stock target)
+	    public Flow(string name, Stock source, Stock target)
 		{
 			Name = name;
 			Source = source;
@@ -20,7 +20,7 @@ namespace SystemAnalyzer.Graphs
 
 		public override string ToString()
 	    {
-	        return string.Concat(Name, ": ", Source, " -> ", Target);
+	        return string.Concat(Name, ": ", Source.Name, " -> ", Target.Name);
 	    }
 
 	    public override bool Equals(object that)
@@ -28,11 +28,11 @@ namespace SystemAnalyzer.Graphs
 		    if (that is Flow flow)
 		    {
 		        return Name.Equals(flow.Name) &&
-		               Source == flow.Source &&
-		               Target == flow.Target;
+		               Source.Equals(flow.Source) &&
+		               Target.Equals(flow.Target);
 		    }
 
-		    return false;
+		    return ReferenceEquals(this, that);
 		}
 
 	    public override int GetHashCode()

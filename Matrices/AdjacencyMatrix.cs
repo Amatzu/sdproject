@@ -46,10 +46,13 @@ namespace SystemAnalyzer.Matrices
             return adjacencyMatrix;
         }
 
-        	public InvariantMap FindPotentialPatterns()
+        /// <summary>
+        /// Группирует связные подграфы по инвариантам.
+        /// </summary>
+        	internal InvariantMap GetInvariantGroups()
 	    {
 	        var cache = new MinorCache(this);
-	        var patternMap = new InvariantMap(this);
+	        var invariantMap = new InvariantMap(this);
 
 	        //Находим миноры размера 2
 	        for (int i = 0; i < Vertices; i++)
@@ -74,24 +77,20 @@ namespace SystemAnalyzer.Matrices
 	                {
 	                    int sign = i % 2 == 0 ? 1 : -1;
 	                    int[] lesserMinor = minor.SkipIndex(i);
-	                    det += this[minor[i], 0] * cache[lesserMinor] * sign;
+	                    det += this[minor[i], minor[0]] * cache[lesserMinor] * sign;
 	                }
 
 	                cache[minor] = det;
-                    if(MinorIsConnected(minor)) patternMap.Add(minor, det);
+                    if(MinorIsConnected(minor)) invariantMap.Add(minor, det);
 	            }
-
-	            patternMap.Filter(n);
 	        }
 
-	        return patternMap;
+	        return invariantMap;
 	    }
 
-	    public bool AreIntersecting(int[] minor1, int[] minor2)
-	    {
-	        return minor1.Any(minor2.Contains);
-	    }
-
+        /// <summary>
+        /// Проверяет соответствующий минору подграф на связность.
+        /// </summary>
 	    private bool MinorIsConnected(int[] minor)
 	    {
 	        int dfs(int source, bool[] visited)
@@ -118,17 +117,20 @@ namespace SystemAnalyzer.Matrices
 	        return dfs(0, connectedVertices) == minor.Length;
 	    }
 
+        /// <summary>
+        /// Перечисляет все возможные миноры размера n.
+        /// </summary>
 	    private IEnumerable<int[]> MinorsOfSize(int n)
 	    {
-	        var iterator = new CombinationIterator(0, MaxMinorSize, n);
+	        var iterator = new CombinationIterator(0, Vertices - 1, n);
 	        return iterator.Iterations;
 	    }
 
         private int this[string src, string dest]
         {
             set {
-                int srcIndex  = Array.BinarySearch(VertexMap, src);
-                int destIndex = Array.BinarySearch(VertexMap, dest);
+                int srcIndex  = Array.IndexOf(VertexMap, src);
+                int destIndex = Array.IndexOf(VertexMap, dest);
                 Matrix[srcIndex, destIndex] = value;
             }
         }

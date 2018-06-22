@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SystemAnalyzer.Graphs
 {
@@ -21,7 +17,7 @@ namespace SystemAnalyzer.Graphs
                 return Name.Equals(stock.Name);
             }
 
-            return false;
+            return ReferenceEquals(this, that);
         }
 
         public override int GetHashCode()

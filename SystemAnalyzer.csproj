@@ -83,8 +83,12 @@
     <Compile Include="Graphs\Edge.cs" />
     <Compile Include="Graphs\Isomorphism\EdgeCount.cs" />
     <Compile Include="Graphs\Graph.cs" />
+    <Compile Include="Graphs\Isomorphism\InvariantInstance.cs" />
     <Compile Include="Graphs\Isomorphism\InvariantMap.cs" />
     <Compile Include="Graphs\Isomorphism\IsomorphismChecker.cs" />
+    <Compile Include="Graphs\Patterns\PatternMap.cs" />
+    <Compile Include="Graphs\Patterns\Pattern.cs" />
+    <Compile Include="Graphs\Patterns\PatternInstance.cs" />
     <Compile Include="Graphs\Stock.cs" />
     <Compile Include="Matrices\MinorCache.cs" />
     <Compile Include="Matrices\CombinationIterator.cs" />
@@ -96,6 +100,7 @@
     <Compile Include="Graphs\GraphParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Tests\UtilTests.cs" />
+    <Compile Include="Utils\DisjointSet.cs" />
     <Compile Include="Utils\Extensions\ArrayExtensions.cs" />
     <Compile Include="Utils\Permutations.cs" />
     <Compile Include="Utils\MathUtils.cs" />

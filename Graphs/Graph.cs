@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using SystemAnalyzer.Graphs.Patterns;
+using SystemAnalyzer.Matrices;
 using QuickGraph;
 
 namespace SystemAnalyzer.Graphs
@@ -48,14 +51,51 @@ namespace SystemAnalyzer.Graphs
             return subgraph;
         }
 
-        public IEnumerable<Stock> Neighbors(Stock stock)
+        public void ReplacePatterns(PatternMap patterns)
         {
-            var neighbors = from flow in InnerFlows
-                            where !flow.IsSelfEdge<Stock, Flow>() &&
-                                  flow.IsAdjacent(stock)
-                            select flow.GetOtherVertex(stock);
+            for (int n = patterns.MaxPatternSize; n > 2; n--)
+            {
+                foreach (var pattern in patterns[n])
+                {
+                    int id = 0;
+                    foreach (var instance in pattern.Instances)
+                    {
+                        var patternStock = new Stock("{" + pattern.Name + " #" + id + "}");
 
-            return neighbors;
+                        AddVertex(patternStock);
+
+                        RemoveEdgeIf(e => instance.Vertices.Contains(e.Source.Name) &&
+                                          instance.Vertices.Contains(e.Target.Name));
+
+                        var flows = Edges.ToList();
+                        foreach (var flow in flows)
+                        {
+                            if (instance.Vertices.Contains(flow.Source.Name))
+                            {
+                                RemoveEdge(flow);
+                                flow.Source = patternStock;
+                                AddEdge(flow);
+                            }
+                            if (instance.Vertices.Contains(flow.Target.Name))
+                            {
+                                RemoveEdge(flow);
+                                flow.Target = patternStock;
+                                AddEdge(flow);
+                            }
+                        }
+
+                        RemoveVertexIf(v => instance.Vertices.Contains(v.Name));
+
+                        id++;
+                    }
+                }
+            }
+        }
+
+        public AdjacencyMatrix SubgraphMatrix(string[] includedVertices)
+        {
+            var subgraph = Subgraph(includedVertices);
+            return AdjacencyMatrix.FromGraph(subgraph);
         }
     }
 }
