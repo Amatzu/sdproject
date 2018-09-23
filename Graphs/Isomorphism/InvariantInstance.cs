@@ -3,10 +3,13 @@ using System.Linq;
 
 namespace SystemAnalyzer.Graphs.Isomorphism
 {
-    internal struct InvariantInstance
+    /// <summary>
+    /// Содержит подграф и определитель его матрицы смежности.
+    /// </summary>
+    internal readonly struct InvariantInstance
     {
-        public int Key;
-        public string[] Vertices;
+        public readonly int Key;
+        public readonly string[] Vertices;
 
         public InvariantInstance(int key, string[] vertices)
         {

@@ -5,7 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 
-namespace SystemAnalyzer.Graphs
+namespace SystemAnalyzer.Graphs.Parsing
 {
 	/// <summary>
 	/// Представляет парсер, составляющий граф на основе системы, описанной в файле XMILE.

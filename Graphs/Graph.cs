@@ -57,13 +57,11 @@ namespace SystemAnalyzer.Graphs
             {
                 foreach (var pattern in patterns[n])
                 {
-                    int id = 0;
                     foreach (var instance in pattern.Instances)
                     {
-                        var patternStock = new Stock("{" + pattern.Name + " #" + id + "}");
+                        var patternStock = new Stock(instance.Name);
 
                         AddVertex(patternStock);
-
                         RemoveEdgeIf(e => instance.Vertices.Contains(e.Source.Name) &&
                                           instance.Vertices.Contains(e.Target.Name));
 
@@ -85,8 +83,6 @@ namespace SystemAnalyzer.Graphs
                         }
 
                         RemoveVertexIf(v => instance.Vertices.Contains(v.Name));
-
-                        id++;
                     }
                 }
             }

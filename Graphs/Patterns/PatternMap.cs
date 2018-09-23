@@ -15,7 +15,7 @@ namespace SystemAnalyzer.Graphs.Patterns
         public PatternMap(AdjacencyMatrix matrix)
         {
             this.matrix = matrix;
-            patterns = new List<Pattern>[matrix.MaxMinorSize - 2];
+            patterns = new List<Pattern>[matrix.Vertices - 2];
             for (int i = 0; i < patterns.Length; i++)
             {
                 patterns[i] = new List<Pattern>();
@@ -33,29 +33,6 @@ namespace SystemAnalyzer.Graphs.Patterns
 
                 return count;
             }
-        }
-
-        public void RemoveUniques(int size)
-        {
-            this[size].RemoveAll(p => p.Instances.Count < 2);
-        }
-
-        public void RemoveSelfIntersecting(int size)
-        {
-            var patternsToDelete = new List<Pattern>();
-            foreach (var pattern in this[size])
-            {
-                foreach (var v in matrix.VertexMap)
-                {
-                    if (pattern.Instances.All(i => i.Vertices.Contains(v)))
-                    {
-                        patternsToDelete.Add(pattern);
-                        break;
-                    }
-                }
-            }
-
-            this[size].RemoveAll(patternsToDelete.Contains);
         }
 
         public bool IsEmpty

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using SystemAnalyzer.Graphs;
+using SystemAnalyzer.Graphs.Parsing;
 using NUnit.Framework;
 
 namespace SystemAnalyzer.Tests
@@ -25,5 +27,49 @@ namespace SystemAnalyzer.Tests
 
 			Assert.Throws<FileNotFoundException>(() => new GraphParser("Non-existant file!"));
 		}
+
+	    [Test]
+	    public void ResultTest()
+	    {
+	        var graph = new Graph(true, new Stock("[GLOBAL]"));
+	        var stocks = Enumerable.Range(0, 'O' - 'A' + 1)
+	                               .Select(c => new Stock(((char) (c + 'A')).ToString()))
+	                               .ToArray();
+	        graph.AddVertexRange(stocks);
+	        void makeFlow(char a, char b)
+	        {
+	            var name = a.ToString() + b.ToString();
+	            var flow = new Flow(name, stocks[a - 'A'], stocks[b - 'A']);
+	            graph.AddEdge(flow);
+	        }
+
+	        makeFlow('B', 'C');
+	        makeFlow('B', 'J');
+	        makeFlow('C', 'A');
+	        makeFlow('D', 'C');
+	        makeFlow('D', 'H');
+	        makeFlow('D', 'I');
+	        makeFlow('I', 'H');
+	        makeFlow('J', 'H');
+	        makeFlow('L', 'N');
+	        makeFlow('N', 'M');
+	        makeFlow('A', 'O');
+	        makeFlow('B', 'O');
+	        makeFlow('D', 'E');
+	        makeFlow('E', 'G');
+	        makeFlow('G', 'D');
+	        makeFlow('D', 'F');
+	        makeFlow('E', 'F');
+	        makeFlow('G', 'F');
+	        makeFlow('I', 'J');
+	        makeFlow('I', 'M');
+	        makeFlow('J', 'L');
+	        makeFlow('L', 'I');
+	        makeFlow('I', 'K');
+	        makeFlow('J', 'K');
+	        makeFlow('L', 'K');
+
+            Program.Process(graph);
+	    }
 	}
 }

@@ -17,7 +17,7 @@ namespace SystemAnalyzer.Graphs.Isomorphism
         public InvariantMap(AdjacencyMatrix matrix)
         {
             this.matrix = matrix;
-            container = new Container[matrix.MaxMinorSize - 2];
+            container = new Container[matrix.Vertices - 2];
             for (int i = 0; i < container.Length; i++)
             {
                 container[i] = new Container();
@@ -41,7 +41,7 @@ namespace SystemAnalyzer.Graphs.Isomorphism
             this[minor.Length][det].Insert(0, vertices);
         }
 
-        public InvariantInstance[] GetAllOfSize(int size)
+        public InvariantInstance[] OfSize(int size)
         {
             var x = this[size].SelectMany(pair => pair.Value.Select(v => new InvariantInstance(pair.Key, v)));
             return x.ToArray();

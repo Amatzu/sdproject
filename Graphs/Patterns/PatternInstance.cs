@@ -6,11 +6,13 @@ namespace SystemAnalyzer.Graphs.Patterns
 {
     public readonly struct PatternInstance
     {
+        public readonly string Name;
         public readonly Pattern Pattern;
         public readonly string[] Vertices;
 
         public PatternInstance(Pattern pattern, string[] vertices)
         {
+            Name = pattern.Name + " #" + pattern.Instances.Count();
             Pattern = pattern;
             Vertices = vertices;
         }

@@ -7,7 +7,7 @@ namespace SystemAnalyzer.Graphs.Patterns
     public class Pattern
     {
         private const string NAME_BASE = "P";
-        private static int totalPatternCount = 0;
+        private static int totalPatternCount;
 
         public readonly int Key;
         public readonly AdjacencyMatrix Matrix;
@@ -26,6 +26,10 @@ namespace SystemAnalyzer.Graphs.Patterns
             Instances = new List<PatternInstance>();
         }
 
+        /// <summary>
+        /// Добавляет экземпляр паттерна.
+        /// </summary>
+        /// <param name="vertices">Входящие в экземпляр вершины</param>
         public void AddInstance(string[] vertices)
         {
             var instance = new PatternInstance(this, vertices);
@@ -36,6 +40,7 @@ namespace SystemAnalyzer.Graphs.Patterns
         /// Удаляет все экземпляры данного паттерна, пересекающиеся с любым экземпляром
         /// второго паттерна.
         /// </summary>
+        /// <param name="that">Второй паттерн</param>
         public void RemoveIntersectingInstances(Pattern that)
         {
             Instances = Instances.Where(i => !that.Instances.Any(i.Intersects)).ToList();

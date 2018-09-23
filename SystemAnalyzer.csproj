@@ -80,6 +80,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphs\Analyzing\PatternFilterer.cs" />
+    <Compile Include="Graphs\Analyzing\PatternSelector.cs" />
     <Compile Include="Graphs\Edge.cs" />
     <Compile Include="Graphs\Isomorphism\EdgeCount.cs" />
     <Compile Include="Graphs\Graph.cs" />
@@ -96,12 +98,13 @@
     <Compile Include="Tests\GraphTests.cs" />
     <Compile Include="Matrices\AdjacencyMatrix.cs" />
     <Compile Include="Graphs\Flow.cs" />
-    <Compile Include="Graphs\GraphAnalyzer.cs" />
-    <Compile Include="Graphs\GraphParser.cs" />
+    <Compile Include="Graphs\Analyzing\GraphAnalyzer.cs" />
+    <Compile Include="Graphs\Parsing\GraphParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Tests\UtilTests.cs" />
     <Compile Include="Utils\DisjointSet.cs" />
     <Compile Include="Utils\Extensions\ArrayExtensions.cs" />
+    <Compile Include="Utils\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Utils\Permutations.cs" />
     <Compile Include="Utils\MathUtils.cs" />
   </ItemGroup>
