@@ -6,15 +6,16 @@ using SystemAnalyzer.Utils.Extensions;
 
 namespace SystemAnalyzer.Graphs.Analyzing
 {
+    /// <summary>
+    /// Выбирает наибольшее возможное количество непересекающихся экземпляров паттернов.
+    /// </summary>
     internal class PatternSelector
     {
         private readonly PatternMap patterns;
-        private readonly PatternFilterer filterer;
 
-        public PatternSelector(PatternMap patterns, PatternFilterer filterer)
+        public PatternSelector(PatternMap patterns)
         {
             this.patterns = patterns;
-            this.filterer = filterer;
         }
 
         /// <summary>
@@ -22,7 +23,6 @@ namespace SystemAnalyzer.Graphs.Analyzing
         /// </summary>
         public void SelectInstances(int size)
         {
-            filterer.RemoveIntersectingWithBiggerPatterns(size);
             if (patterns[size].Count == 0) return;
 
             var allInstances      = patterns[size].SelectMany(p => p.Instances).ToArray();

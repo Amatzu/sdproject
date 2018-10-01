@@ -1,21 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SystemAnalyzer.Graphs.Patterns;
-using SystemAnalyzer.Matrices;
+﻿using SystemAnalyzer.Graphs.Patterns;
 
 namespace SystemAnalyzer.Graphs.Analyzing
 {
     /// <summary>
-    /// Позволяет фильтровать паттерны
+    /// Представляет фильтратор, отсеивающий паттерны с низким приоритетом.
     /// </summary>
     internal class PatternFilterer
     {
         private readonly PatternMap patternMap;
-        private readonly AdjacencyMatrix matrix;
 
-        public PatternFilterer(AdjacencyMatrix matrix, PatternMap patternMap)
+        public PatternFilterer(PatternMap patternMap)
         {
-            this.matrix = matrix;
             this.patternMap = patternMap;
         }
 

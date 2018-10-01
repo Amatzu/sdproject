@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SystemAnalyzer.Graphs.Isomorphism;
 using SystemAnalyzer.Graphs.Patterns;
@@ -32,13 +31,15 @@ namespace SystemAnalyzer.Graphs.Analyzing
             KnownPatterns = patterns ?? new PatternMap(matrix);
             if (patterns != null) KnownPatterns.ClearInstances();
 
-            filterer = new PatternFilterer(matrix, KnownPatterns);
-            selector = new PatternSelector(KnownPatterns, filterer);
+            filterer = new PatternFilterer(KnownPatterns);
+            selector = new PatternSelector(KnownPatterns);
 		}
 
         /// <summary>
         /// Находит новые паттерны и вхождения существующих.
         /// </summary>
+        /// <param name="newPatterns">Новые паттерны</param>
+        /// <returns>true, если найдены новые паттерны, и false в противном случае</returns>
 	    public bool FindPatterns(out PatternMap newPatterns)
 	    {
 	        newPatterns = new PatternMap(matrix);
@@ -49,9 +50,8 @@ namespace SystemAnalyzer.Graphs.Analyzing
                 newPatterns[n] = PatternsOfSize(n, coveredVertices);
                 KnownPatterns[n].AddRange(newPatterns[n]);
 
-                selector.SelectInstances(n);
-
 	            filterer.RemoveIntersectingWithBiggerPatterns(n);
+                selector.SelectInstances(n);
                 filterer.RemoveSingletons(n);
 
 	            var vertices = (from pattern in newPatterns[n]
@@ -89,17 +89,24 @@ namespace SystemAnalyzer.Graphs.Analyzing
 	        if (size > matrix.Vertices) return new List<Pattern>();
 
 	        SetIsomorphismGroups(isomorphismGroups, potentialPatterns, matrices);
-	        var patterns = CreateNewPatterns(potentialPatterns, matrices, isomorphismGroups);
+	        var patterns = CreateNewPatterns(isomorphismGroups, potentialPatterns, matrices);
 	        return patterns;
 	    }
 
+	    /// <summary>
+        /// Находит экземпляры уже известных паттернов.
+        /// </summary>
+        /// <param name="isomorphismGroups">Группы изоморфизма</param>
+        /// <param name="size">Размер паттернов для поиска</param>
+        /// <param name="potentialPatterns">Сгруппированные по инвариантам подграфы</param>
+        /// <param name="matrices">Матрицы смежности подграфов</param>
 	    private void FindKnownPatternInstances(int[] isomorphismGroups, int size, InvariantInstance[] potentialPatterns, AdjacencyMatrix[] matrices)
         {
 	        foreach (var oldPattern in KnownPatterns[size])
 	        {
 	            for (int i = 0; i < potentialPatterns.Length; i++)
 	            {
-	                if (potentialPatterns[i].Key != oldPattern.Key) continue;
+	                if (potentialPatterns[i].Key != oldPattern.InvariantKey) continue;
 
 	                var checker = new IsomorphismChecker(oldPattern.Matrix);
 	                bool isomorphic = checker.Check(matrices[i]);
@@ -112,6 +119,12 @@ namespace SystemAnalyzer.Graphs.Analyzing
 	        }
 	    }
 
+        /// <summary>
+        /// Группирует изоморфные подграфы.
+        /// </summary>
+        /// <param name="isomorphismGroups">Группы изоморфизма</param>
+        /// <param name="potentialPatterns">Сгруппированные по инвариантам подграфы</param>
+        /// <param name="matrices">Матрицы смежности подграфов</param>
 	    private void SetIsomorphismGroups(int[] isomorphismGroups, InvariantInstance[] potentialPatterns, AdjacencyMatrix[] matrices)
 	    {
 	        var edgeCount = potentialPatterns.Select(g => CountEdges(g.Vertices)).ToArray();
@@ -135,8 +148,13 @@ namespace SystemAnalyzer.Graphs.Analyzing
 	            }
 	        }
 	    }
-
-	    private List<Pattern> CreateNewPatterns(InvariantInstance[] potentialPatterns, AdjacencyMatrix[] matrices, int[] isomorphismGroups)
+        /// <summary>
+        /// Группирует изоморфные подграфы в новые паттерны.
+        /// </summary>
+	    /// <param name="isomorphismGroups">Группы изоморфизма</param>
+	    /// <param name="potentialPatterns">Сгруппированные по инвариантам подграфы</param>
+	    /// <param name="matrices">Матрицы смежности подграфов</param>
+	    private List<Pattern> CreateNewPatterns(int[] isomorphismGroups, InvariantInstance[] potentialPatterns, AdjacencyMatrix[] matrices)
 	    {
 	        var newPatterns = new List<Pattern>();
 

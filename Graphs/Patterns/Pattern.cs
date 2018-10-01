@@ -4,23 +4,26 @@ using SystemAnalyzer.Matrices;
 
 namespace SystemAnalyzer.Graphs.Patterns
 {
+    /// <summary>
+    /// Представляет паттерн в графе.
+    /// </summary>
     public class Pattern
     {
         private const string NAME_BASE = "P";
         private static int totalPatternCount;
 
-        public readonly int Key;
+        public readonly int InvariantKey;
         public readonly AdjacencyMatrix Matrix;
         public List<PatternInstance> Instances { get; private set; }
         public readonly int EdgeCount;
 
         public readonly string Name;
 
-        public Pattern(int key, AdjacencyMatrix matrix)
+        public Pattern(int invariantKey, AdjacencyMatrix matrix)
         {
             Name = NAME_BASE + totalPatternCount;
             totalPatternCount++;
-            Key = key;
+            InvariantKey = invariantKey;
             Matrix = matrix;
             Instances = new List<PatternInstance>();
 
