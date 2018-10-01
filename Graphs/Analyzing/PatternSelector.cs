@@ -73,7 +73,8 @@ namespace SystemAnalyzer.Graphs.Analyzing
             while (instances.AnyTwo((i, j) => i.Intersects(j)))
             {
                 var sortedInstances = from i in instances
-                                      orderby instances.Count(i.Intersects) descending
+                                      orderby instances.Count(i.Intersects) descending,
+                                              i.Pattern.EdgeCount ascending
                                       select i;
 
                 instances = instances.RemoveItem(sortedInstances.First());

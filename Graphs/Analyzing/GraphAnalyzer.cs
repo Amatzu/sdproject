@@ -86,7 +86,7 @@ namespace SystemAnalyzer.Graphs.Analyzing
 	        isomorphismGroups.InitializeWith(INIT_GROUP);
 	        FindKnownPatternInstances(isomorphismGroups, size, potentialPatterns, matrices);
 
-	        if (size > matrix.MaxMinorSize) return new List<Pattern>();
+	        if (size > matrix.Vertices) return new List<Pattern>();
 
 	        SetIsomorphismGroups(isomorphismGroups, potentialPatterns, matrices);
 	        var patterns = CreateNewPatterns(potentialPatterns, matrices, isomorphismGroups);

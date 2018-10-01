@@ -12,10 +12,9 @@ namespace SystemAnalyzer.Graphs.Patterns
         public readonly int Key;
         public readonly AdjacencyMatrix Matrix;
         public List<PatternInstance> Instances { get; private set; }
+        public readonly int EdgeCount;
 
         public readonly string Name;
-
-        public int Size => Matrix.Vertices;
 
         public Pattern(int key, AdjacencyMatrix matrix)
         {
@@ -24,6 +23,16 @@ namespace SystemAnalyzer.Graphs.Patterns
             Key = key;
             Matrix = matrix;
             Instances = new List<PatternInstance>();
+
+            EdgeCount = 0;
+            int n = matrix.Vertices;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    EdgeCount += matrix[i, j];
+                }
+            }
         }
 
         /// <summary>

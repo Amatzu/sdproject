@@ -17,9 +17,9 @@ namespace SystemAnalyzer.Matrices
             if (matrix == null)
                 throw new NullReferenceException("Adjacency matrix is null");
 
-            minors = new int[matrix.MaxMinorSize - 1][];
+            minors = new int[matrix.Vertices - 1][];
 
-            for (int i = MIN_SIZE; i <= matrix.MaxMinorSize; i++)
+            for (int i = MIN_SIZE; i <= matrix.Vertices; i++)
             {
                 int minorCount = MathUtils.Combinations(matrix.Vertices, i);
                 minors[i - MIN_SIZE] = new int[minorCount];

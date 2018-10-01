@@ -38,7 +38,7 @@ namespace SystemAnalyzer.Graphs.Patterns
         public bool IsEmpty
         {
             get {
-                for (int n = matrix.MaxMinorSize; n > 2; n--)
+                for (int n = matrix.Vertices; n > 2; n--)
                 {
                     if (this[n].Count > 0) return false;
                 }

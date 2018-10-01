@@ -11,8 +11,7 @@ namespace SystemAnalyzer.Matrices
     {
         public string[] VertexMap { get; private set; }
         public int[,] Matrix { get; private set; }
-        public int Vertices     => Matrix.GetLength(0);
-        public int MaxMinorSize => Vertices;
+        public int Vertices => Matrix.GetLength(0);
 
         private AdjacencyMatrix(string[] vertexMap, int[,] matrix)
         {
@@ -67,7 +66,7 @@ namespace SystemAnalyzer.Matrices
 	        }
 
 	        //Находим остальные миноры рекурсивно
-	        for (int n = 3; n <= MaxMinorSize; n++)
+	        for (int n = 3; n <= Vertices; n++)
 	        {
 	            var minors = MinorsOfSize(n);
 	            foreach (var minor in minors)
