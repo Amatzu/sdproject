@@ -7,7 +7,6 @@ using SystemAnalyzer.Graphs.Patterns;
 
 namespace SystemAnalyzer
 {
-    //TODO: refactoring
 	internal class Program
 	{
 	    private static readonly string PATH = AppDomain.CurrentDomain.BaseDirectory + "patterns.txt";

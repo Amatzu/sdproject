@@ -22,8 +22,8 @@ namespace SystemAnalyzer.Graphs.Parsing
 			var file = new FileInfo(filepath);
 			if (!file.Exists)
 				throw new FileNotFoundException("Файл не найден");
-			if (file.Extension != ".xmile")
-				throw new ArgumentException("Файл должен иметь расширение .xmile");
+			if (file.Extension != ".xmile" && file.Extension != ".xml" )
+				throw new ArgumentException("Файл должен иметь расширение .xmile или .xml");
 
 			xml = XDocument.Load(filepath);
 

@@ -71,5 +71,35 @@ namespace SystemAnalyzer.Tests
 
             Program.Process(graph);
 	    }
+
+	    [Test]
+	    public void SmallResultTest()
+	    {
+	        var graph = new Graph(true, new Stock("[GLOBAL]"));
+	        var stocks = Enumerable.Range(0, 'G' - 'A' + 1)
+	                               .Select(c => new Stock(((char) (c + 'A')).ToString()))
+	                               .ToArray();
+	        graph.AddVertexRange(stocks);
+	        void makeFlow(char a, char b)
+	        {
+	            var name = a.ToString() + b.ToString();
+	            var flow = new Flow(name, stocks[a - 'A'], stocks[b - 'A']);
+	            graph.AddEdge(flow);
+	        }
+
+	        makeFlow('A', 'B');
+	        makeFlow('B', 'C');
+	        makeFlow('C', 'A');
+
+	        makeFlow('D', 'E');
+	        makeFlow('E', 'F');
+	        makeFlow('F', 'D');
+
+	        makeFlow('A', 'D');
+	        makeFlow('F', 'G');
+            makeFlow('G', 'C');
+
+	        Program.Process(graph);
+	    }
 	}
 }

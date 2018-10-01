@@ -12,7 +12,7 @@ namespace SystemAnalyzer.Matrices
         public string[] VertexMap { get; private set; }
         public int[,] Matrix { get; private set; }
         public int Vertices     => Matrix.GetLength(0);
-        public int MaxMinorSize => Vertices / 2;
+        public int MaxMinorSize => Vertices;
 
         private AdjacencyMatrix(string[] vertexMap, int[,] matrix)
         {

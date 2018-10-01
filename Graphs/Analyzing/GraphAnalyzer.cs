@@ -21,7 +21,7 @@ namespace SystemAnalyzer.Graphs.Analyzing
 	    private readonly InvariantMap invariants;
 	    private readonly PatternFilterer filterer;
 	    private readonly PatternSelector selector;
-	    public PatternMap PatternMap { get; private set; }
+	    public PatternMap KnownPatterns { get; private set; }
 
 		public GraphAnalyzer(Graph graph, PatternMap patterns = null)
 		{
@@ -29,11 +29,11 @@ namespace SystemAnalyzer.Graphs.Analyzing
 		    matrix = AdjacencyMatrix.FromGraph(graph);
 		    invariants = matrix.GetInvariantGroups();
 
-            PatternMap = patterns ?? new PatternMap(matrix);
-            if (patterns != null) PatternMap.ClearInstances();
+            KnownPatterns = patterns ?? new PatternMap(matrix);
+            if (patterns != null) KnownPatterns.ClearInstances();
 
-            filterer = new PatternFilterer(matrix, PatternMap);
-            selector = new PatternSelector(PatternMap, filterer);
+            filterer = new PatternFilterer(matrix, KnownPatterns);
+            selector = new PatternSelector(KnownPatterns, filterer);
 		}
 
         /// <summary>
@@ -47,6 +47,8 @@ namespace SystemAnalyzer.Graphs.Analyzing
 	        for (int n = matrix.Vertices - 1; n > 2; n--)
 	        {
                 newPatterns[n] = PatternsOfSize(n, coveredVertices);
+                KnownPatterns[n].AddRange(newPatterns[n]);
+
                 selector.SelectInstances(n);
 
 	            filterer.RemoveIntersectingWithBiggerPatterns(n);
@@ -59,7 +61,6 @@ namespace SystemAnalyzer.Graphs.Analyzing
 
 	            coveredVertices.AddRange(vertices);
 
-	            newPatterns[n].AddRange(PatternMap[n]);
 	        }
 
 	        return !newPatterns.IsEmpty;
@@ -94,7 +95,7 @@ namespace SystemAnalyzer.Graphs.Analyzing
 
 	    private void FindKnownPatternInstances(int[] isomorphismGroups, int size, InvariantInstance[] potentialPatterns, AdjacencyMatrix[] matrices)
         {
-	        foreach (var oldPattern in PatternMap[size])
+	        foreach (var oldPattern in KnownPatterns[size])
 	        {
 	            for (int i = 0; i < potentialPatterns.Length; i++)
 	            {
